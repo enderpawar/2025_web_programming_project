@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { api, setToken } from '../api.js';
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -19,10 +20,7 @@ const Landing = () => {
             <a className="hover:text-white/100" href="#help">Help</a>
             <a className="hover:text-white/100" href="#donate">Donate</a>
           </nav>
-          <div className="flex items-center space-x-2">
-            <button className="px-3 py-1.5 rounded-md text-sm bg-white/10 hover:bg-white/20">Log In</button>
-            <button className="px-3 py-1.5 rounded-md text-sm bg-teal-500 hover:bg-teal-400 text-black font-semibold">SIGNUP</button>
-          </div>
+          <LandingRightMenu />
         </div>
       </header>
 
@@ -72,3 +70,59 @@ const Landing = () => {
 };
 
 export default Landing;
+
+const LandingRightMenu = () => {
+  const navigate = useNavigate();
+  const [me, setMe] = useState(null);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const who = await api.me();
+        setMe(who);
+      } catch {}
+    })();
+  }, []);
+
+  if (!me) {
+    return (
+      <div className="flex items-center space-x-2">
+        <button onClick={() => navigate('/login')} className="px-3 py-1.5 rounded-md text-sm bg-white/10 hover:bg-white/20">Log In</button>
+        <button onClick={() => navigate('/signup')} className="px-3 py-1.5 rounded-md text-sm bg-teal-500 hover:bg-teal-400 text-black font-semibold">SIGNUP</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="px-3 py-1.5 rounded-md text-sm bg-white/10 hover:bg-white/20"
+        aria-haspopup="true"
+        aria-expanded={open}
+      >
+        Profile
+      </button>
+      {open && (
+        <div className="absolute right-0 mt-2 w-64 bg-[#202a3a] text-white rounded-lg border border-white/10 shadow-xl p-4 space-y-2 z-10">
+          <div className="font-semibold">{me.name}</div>
+          <div className="text-white/70 text-sm">{me.email}</div>
+          <div className="h-px bg-white/10 my-2" />
+          <button
+            className="w-full text-left px-3 py-2 rounded bg-white/5 hover:bg-white/10"
+            onClick={() => navigate('/rooms')}
+          >
+            My Group
+          </button>
+          <button
+            className="w-full text-left px-3 py-2 rounded bg-white/5 hover:bg-white/10"
+            onClick={() => { setToken(''); setMe(null); setOpen(false); }}
+          >
+            Log Out
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};

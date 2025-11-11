@@ -54,7 +54,7 @@ const RoomCard = ({ room, onClick, canDelete, onDelete }) => (
         title="Delete room"
         aria-label="Delete room"
         onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
-        className="btn-ghost btn-sm"
+        style={{ background: 'none', border: 'none', color: 'rgba(255, 255, 255, 0.5)', cursor: 'pointer', padding: '0.5rem', fontSize: '1rem' }}
       >
         X
       </button>
@@ -178,7 +178,7 @@ const Rooms = () => {
             onClick={() => navigate(`/rooms/${room.id}/problems`)}
             canDelete={me && me.id === room.ownerId}
             onDelete={async () => {
-              const ok = confirm('Delete this room and all its problems and codes? This action cannot be undone.');
+              const ok = confirm('이 방과 모든 문제 및 코드를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');
               if (!ok) return;
               try {
                 await api.deleteRoom(room.id);

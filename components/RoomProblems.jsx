@@ -30,7 +30,7 @@ const CreateProblemModal = ({ open, onClose, onCreate }) => {
   const [title, setTitle] = useState('Two Sum');
   const [difficulty, setDifficulty] = useState('Easy');
   const [functionName, setFunctionName] = useState('solve');
-  const [description, setDescription] = useState('Given an array of numbers and a target, return indices of the two numbers that add up to target.');
+  const [description, setDescription] = useState('정수 배열과 타겟이 주어졌을 때, 타겟에 합산되는 두 수의 인덱스를 반환하는 함수를 작성하세요.');
   const [starterCode, setStarterCode] = useState('function solve(nums, target) {\n  // TODO\n}');
   const [samples, setSamples] = useState('[{"input":[[2,7,11,15],9],"output":[0,1]}]');
   const [tests, setTests] = useState('[{"input":[[2,7,11,15],9],"output":[0,1]}]');

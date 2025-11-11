@@ -40,12 +40,45 @@ The project now includes an AI-powered hint system using Google's Gemini API:
 
 ### Admin setup
 
-- By default, if no admin is set in `server/data/users.json`, the first user in that file is treated as a temporary admin (bootstrap) and can create Rooms.
+- The system now supports two user roles: **Professor** and **Student**
+- **Default Professor Account:**
+  - Email: `owner@owner`
+  - Password: `owner`
+  - This account is automatically created with professor privileges
+  
+- **Professor Privileges:**
+  1. Can create new Rooms (groups)
+  2. Can invite students to their Rooms
+  3. Can create problems within their Rooms
+  4. Has full control over their Rooms
+
+- **Student Privileges:**
+  1. Can join Rooms they are invited to
+  2. Can view and solve problems
+  3. Cannot create Rooms or problems
+
 - Alternatively, set the environment variable `ADMIN_EMAILS` (comma-separated emails) when starting the server. Matching accounts will be treated as admins.
   - Example (PowerShell):
     - `$env:ADMIN_EMAILS="admin@example.com,test@test"; npm run dev`
 
-Only admins see the “CREATE” button on the Rooms page and can create rooms with problem definitions and test cases.
+### Using the Professor Features
+
+1. **Login as Professor:**
+   - Use `owner@owner` / `owner` or create an account with this email
+   
+2. **Create a Room:**
+   - Click the "CREATE" button on the Rooms page (only visible to professors)
+   - Fill in room details (name, group, author, etc.)
+
+3. **Invite Members:**
+   - Open your created Room
+   - Click "멤버 초대" (Invite Members) button
+   - Select students from the dropdown
+   - Students will now have access to the Room and its problems
+
+4. **Create Problems:**
+   - Inside your Room, click "CREATE PROBLEM"
+   - Define the problem with title, description, test cases, etc.
 
 ### Problem contract (JavaScript)
 

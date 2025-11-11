@@ -67,12 +67,108 @@ const CreateProblemModal = ({ open, onClose, onCreate }) => {
   );
 };
 
+const InviteMemberModal = ({ open, onClose, roomId }) => {
+  const [users, setUsers] = useState([]);
+  const [members, setMembers] = useState([]);
+  const [selectedEmail, setSelectedEmail] = useState('');
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    if (open) {
+      (async () => {
+        try {
+          const allUsers = await api.getAllUsers();
+          const roomMembers = await api.getRoomMembers(roomId);
+          setUsers(allUsers);
+          setMembers(roomMembers);
+        } catch (e) {
+          console.error(e);
+        }
+      })();
+    }
+  }, [open, roomId]);
+
+  const availableUsers = users.filter(u => !members.some(m => m.id === u.id));
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-[#0f2135] rounded-xl border border-white/10 p-6 text-white">
+        <h3 className="text-lg font-semibold mb-4">그룹 멤버 초대</h3>
+        
+        <div className="mb-4">
+          <label className="text-sm text-white/70 mb-2 block">현재 멤버 ({members.length}명)</label>
+          <div className="bg-white/5 rounded-lg p-3 max-h-32 overflow-y-auto">
+            {members.map(m => (
+              <div key={m.id} className="text-sm py-1 flex justify-between">
+                <span>{m.name}</span>
+                <span className="text-white/50">{m.email}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <label className="text-sm text-white/70 mb-2 block">초대할 사용자 선택</label>
+          <select 
+            className="w-full bg-white/5 rounded-lg px-3 py-2 outline-none border border-white/10"
+            value={selectedEmail}
+            onChange={(e) => setSelectedEmail(e.target.value)}
+          >
+            <option value="">-- 사용자 선택 --</option>
+            {availableUsers.map(u => (
+              <option key={u.id} value={u.email}>
+                {u.name} ({u.email}) - {u.role}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {message && (
+          <div className={`mb-4 p-3 rounded-lg ${message.includes('성공') ? 'bg-green-900/30 text-green-300' : 'bg-red-900/30 text-red-300'}`}>
+            {message}
+          </div>
+        )}
+
+        <div className="flex justify-end gap-2">
+          <button 
+            className="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20" 
+            onClick={onClose}
+          >
+            닫기
+          </button>
+          <button 
+            className="px-3 py-2 rounded-md bg-teal-500 hover:bg-teal-400 text-black font-semibold"
+            disabled={!selectedEmail}
+            onClick={async () => {
+              try {
+                await api.inviteMember(roomId, selectedEmail);
+                setMessage('초대 성공!');
+                const roomMembers = await api.getRoomMembers(roomId);
+                setMembers(roomMembers);
+                setSelectedEmail('');
+                setTimeout(() => setMessage(''), 3000);
+              } catch (e) {
+                setMessage(`오류: ${e.message}`);
+              }
+            }}
+          >
+            초대하기
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const RoomProblems = () => {
   const { roomId } = useParams();
   const navigate = useNavigate();
   const [room, setRoom] = useState(null);
   const [problems, setProblems] = useState([]);
   const [open, setOpen] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
   const [me, setMe] = useState(null);
 
   useEffect(() => {
@@ -95,8 +191,16 @@ const RoomProblems = () => {
           <button onClick={()=>navigate('/rooms')} className="text-teal-300 font-extrabold tracking-widest text-xl">JSC</button>
           <div className="flex items-center gap-2">
             <button onClick={()=>navigate('/rooms')} className="px-3 py-1.5 rounded-md text-sm bg-white/10 hover:bg-white/20">Back</button>
-            {room && me && me.id === room.ownerId && (
-              <button className="px-3 py-1.5 rounded-md text-sm bg-teal-500 hover:bg-teal-400 text-black font-semibold" onClick={()=>setOpen(true)}>CREATE PROBLEM</button>
+            {room && me && me.id === room.ownerId && me.role === 'professor' && (
+              <>
+                <button 
+                  className="px-3 py-1.5 rounded-md text-sm bg-purple-500 hover:bg-purple-400 text-white font-semibold" 
+                  onClick={()=>setInviteOpen(true)}
+                >
+                  멤버 초대
+                </button>
+                <button className="px-3 py-1.5 rounded-md text-sm bg-teal-500 hover:bg-teal-400 text-black font-semibold" onClick={()=>setOpen(true)}>CREATE PROBLEM</button>
+              </>
             )}
           </div>
         </div>
@@ -133,6 +237,7 @@ const RoomProblems = () => {
           setOpen(false);
         }catch(e){ alert(e.message); }
       }} />
+      <InviteMemberModal open={inviteOpen} onClose={()=>setInviteOpen(false)} roomId={roomId} />
     </div>
   );
 };

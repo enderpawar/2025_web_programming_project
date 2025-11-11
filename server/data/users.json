@@ -32,7 +32,8 @@
     "email": "test@test",
     "name": "test",
     "passwordHash": "$2a$10$WYWBQS7JyDmeEUP/8Pc4C.2V9P.UrdivWEyqIBfW7YI/Hv4C6Axv2",
-    "createdAt": 1761626868176
+    "createdAt": 1761626868176,
+    "role": "student"
   },
   {
     "id": "af6a6abd-52e9-4056-9ebe-a263fb09a3e0",
@@ -40,6 +41,15 @@
     "name": "test",
     "passwordHash": "$2a$10$lnSPrMDohPhFdGFuvhZ9audYIi9AnUBVH4uv58jU3DjkIR0UD0C3S",
     "createdAt": 1762219601926,
+    "isAdmin": false
+  },
+  {
+    "id": "3f35d788-748b-4a84-95ac-f876c6814d83",
+    "email": "owner@owner",
+    "name": "Professor_Lee",
+    "passwordHash": "$2a$10$hnAqa9M2xqDZAGaJZY.N0.9Wb4S1jQPKMs3rZNaj4uRXz5wGSVZo6",
+    "role": "professor",
+    "createdAt": 1762823539538,
     "isAdmin": false
   }
 ]

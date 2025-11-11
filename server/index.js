@@ -32,14 +32,36 @@ app.post('/api/auth/signup', async (req, res) => {
   if (users.find((u) => u.email === email)) return res.status(409).json({ error: 'email already exists' });
   const id = crypto.randomUUID();
   const passwordHash = await hashPassword(password);
+  
+  // Determine role: professor or student (default student)
+  const role = email === 'owner@owner' ? 'professor' : 'student';
+  
   // Determine admin based on env to bootstrap at least one admin without UI
   const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map((s) => s.trim()).filter(Boolean);
   const isAdmin = adminEmails.includes(email);
-  const user = { id, email, name: name || email.split('@')[0], passwordHash, createdAt: Date.now(), isAdmin };
+  
+  const user = { 
+    id, 
+    email, 
+    name: name || email.split('@')[0], 
+    passwordHash, 
+    role,  // professor or student
+    createdAt: Date.now(), 
+    isAdmin 
+  };
   users.push(user);
   await writeJSON('users.json', users);
   const token = await signToken({ id: user.id, email: user.email });
-  res.json({ token, user: { id: user.id, email: user.email, name: user.name, isAdmin: !!user.isAdmin } });
+  res.json({ 
+    token, 
+    user: { 
+      id: user.id, 
+      email: user.email, 
+      name: user.name, 
+      role: user.role,
+      isAdmin: !!user.isAdmin 
+    } 
+  });
 });
 
 app.post('/api/auth/login', async (req, res) => {
@@ -50,6 +72,12 @@ app.post('/api/auth/login', async (req, res) => {
   if (!user) return res.status(401).json({ error: 'invalid credentials' });
   const ok = await verifyPassword(password, user.passwordHash);
   if (!ok) return res.status(401).json({ error: 'invalid credentials' });
+  
+  // Backfill role if missing (for existing users)
+  if (!user.role) {
+    user.role = user.email === 'owner@owner' ? 'professor' : 'student';
+  }
+  
   // Backfill admin flag from env if provided
   const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map((s) => s.trim()).filter(Boolean);
   if (adminEmails.includes(user.email) && !user.isAdmin) {
@@ -57,16 +85,38 @@ app.post('/api/auth/login', async (req, res) => {
     await writeJSON('users.json', users);
   }
   const token = await signToken({ id: user.id, email: user.email });
-  res.json({ token, user: { id: user.id, email: user.email, name: user.name, isAdmin: !!user.isAdmin } });
+  res.json({ 
+    token, 
+    user: { 
+      id: user.id, 
+      email: user.email, 
+      name: user.name, 
+      role: user.role,
+      isAdmin: !!user.isAdmin 
+    } 
+  });
 });
 
 app.get('/api/me', authRequired, async (req, res) => {
   const users = await readJSON('users.json');
   const me = users.find((u) => u.id === req.user.id);
   if (!me) return res.status(401).json({ error: 'invalid token' });
+  
+  // Backfill role if missing
+  if (!me.role) {
+    me.role = me.email === 'owner@owner' ? 'professor' : 'student';
+    await writeJSON('users.json', users);
+  }
+  
   const anyAdmin = users.some((u) => !!u.isAdmin);
   const bootstrapAdmin = !anyAdmin && users[0]?.id === me.id;
-  res.json({ id: me.id, email: me.email, name: me.name, isAdmin: !!me.isAdmin || bootstrapAdmin });
+  res.json({ 
+    id: me.id, 
+    email: me.email, 
+    name: me.name, 
+    role: me.role,
+    isAdmin: !!me.isAdmin || bootstrapAdmin 
+  });
 });
 
 // Rooms
@@ -80,6 +130,13 @@ app.post('/api/rooms', authRequired, async (req, res) => {
   const { name, groupName, authorName, logoUrl, makePublic } = req.body || {};
   if (!name) return res.status(400).json({ error: 'name required' });
 
+  // Check if user is professor
+  const users = await readJSON('users.json');
+  const user = users.find((u) => u.id === req.user.id);
+  if (!user || user.role !== 'professor') {
+    return res.status(403).json({ error: 'Only professors can create rooms' });
+  }
+
   const rooms = await readJSON('rooms.json');
   const room = {
     id: crypto.randomUUID(),
@@ -89,6 +146,7 @@ app.post('/api/rooms', authRequired, async (req, res) => {
     logoUrl: logoUrl || '',
     ownerId: req.user.id,
     public: !!makePublic,
+    members: [req.user.id], // Initialize with owner as first member
     createdAt: Date.now(),
     // problem is created later via /api/rooms/:id/problem
     problem: undefined,
@@ -102,7 +160,12 @@ app.get('/api/rooms/:id', authRequired, async (req, res) => {
   const rooms = await readJSON('rooms.json');
   const room = rooms.find((r) => r.id === req.params.id);
   if (!room) return res.status(404).json({ error: 'not found' });
-  if (!room.public && room.ownerId !== req.user.id) return res.status(403).json({ error: 'forbidden' });
+  
+  // Check access: public, owner, or member
+  const isMember = room.members?.includes(req.user.id);
+  if (!room.public && room.ownerId !== req.user.id && !isMember) {
+    return res.status(403).json({ error: 'forbidden' });
+  }
   res.json(room);
 });
 
@@ -159,6 +222,98 @@ app.post('/api/rooms/:id/problem', authRequired, async (req, res) => {
   rooms[idx] = room;
   await writeJSON('rooms.json', rooms);
   res.status(201).json(room.problem);
+});
+
+// Get all users (professors only, for inviting members)
+app.get('/api/users', authRequired, async (req, res) => {
+  const users = await readJSON('users.json');
+  const currentUser = users.find((u) => u.id === req.user.id);
+  
+  if (!currentUser || currentUser.role !== 'professor') {
+    return res.status(403).json({ error: 'Only professors can view users list' });
+  }
+  
+  // Return user list without sensitive data
+  const userList = users.map(u => ({
+    id: u.id,
+    email: u.email,
+    name: u.name,
+    role: u.role || 'student'
+  }));
+  
+  res.json(userList);
+});
+
+// Invite member to room (professor/owner only)
+app.post('/api/rooms/:id/invite', authRequired, async (req, res) => {
+  const { userEmail } = req.body || {};
+  if (!userEmail) return res.status(400).json({ error: 'userEmail required' });
+  
+  const rooms = await readJSON('rooms.json');
+  const users = await readJSON('users.json');
+  
+  const roomIdx = rooms.findIndex((r) => r.id === req.params.id);
+  if (roomIdx === -1) return res.status(404).json({ error: 'Room not found' });
+  
+  const room = rooms[roomIdx];
+  const currentUser = users.find((u) => u.id === req.user.id);
+  
+  // Only room owner (professor) can invite
+  if (room.ownerId !== req.user.id || currentUser.role !== 'professor') {
+    return res.status(403).json({ error: 'Only room owner can invite members' });
+  }
+  
+  // Find user to invite
+  const invitedUser = users.find((u) => u.email === userEmail);
+  if (!invitedUser) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  
+  // Initialize members array if not exists
+  if (!room.members) {
+    room.members = [room.ownerId];
+  }
+  
+  // Check if already a member
+  if (room.members.includes(invitedUser.id)) {
+    return res.status(400).json({ error: 'User is already a member' });
+  }
+  
+  // Add member
+  room.members.push(invitedUser.id);
+  rooms[roomIdx] = room;
+  await writeJSON('rooms.json', rooms);
+  
+  res.json({ 
+    ok: true, 
+    message: `${invitedUser.name} has been invited to the room`,
+    members: room.members 
+  });
+});
+
+// Get room members (owner only)
+app.get('/api/rooms/:id/members', authRequired, async (req, res) => {
+  const rooms = await readJSON('rooms.json');
+  const users = await readJSON('users.json');
+  
+  const room = rooms.find((r) => r.id === req.params.id);
+  if (!room) return res.status(404).json({ error: 'Room not found' });
+  
+  if (room.ownerId !== req.user.id) {
+    return res.status(403).json({ error: 'Only room owner can view members' });
+  }
+  
+  const memberIds = room.members || [room.ownerId];
+  const members = users
+    .filter(u => memberIds.includes(u.id))
+    .map(u => ({
+      id: u.id,
+      email: u.email,
+      name: u.name,
+      role: u.role || 'student'
+    }));
+  
+  res.json(members);
 });
 
 app.delete('/api/rooms/:id', authRequired, async (req, res) => {

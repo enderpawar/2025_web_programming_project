@@ -93,6 +93,15 @@ export const api = {
       } 
     });
   },
+  async getAllUsers() {
+    return req('/api/users');
+  },
+  async inviteMember(roomId, userEmail) {
+    return req(`/api/rooms/${roomId}/invite`, { method: 'POST', body: { userEmail } });
+  },
+  async getRoomMembers(roomId) {
+    return req(`/api/rooms/${roomId}/members`);
+  },
   token,
   API_URL,
 };

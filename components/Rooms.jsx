@@ -154,7 +154,7 @@ const Rooms = () => {
           >
             JSC
           </button>
-          {me && (
+          {me && me.role === 'professor' && (
             <button className="px-3 py-1.5 rounded-md text-sm bg-teal-500 hover:bg-teal-400 text-black font-semibold" onClick={() => setOpen(true)}>
               CREATE
             </button>

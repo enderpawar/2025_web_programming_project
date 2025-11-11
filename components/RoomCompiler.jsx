@@ -9,21 +9,21 @@ import { io } from 'socket.io-client';
 const defaultCode = `// Room scoped JS file.\n// Write code here and click Run. Use Save to persist per room.\n\nfunction greet(name) {\n  return \`Hello, \${name}!\`;\n}\n\nconst message = greet('Room');\nconsole.log(message);`;
 
 const TopBar = ({ title, subtitle, onBack, onSave, saving, savedAt }) => (
-  <header className="flex-shrink-0 bg-gray-800/50 backdrop-blur-sm border-b border-gray-700/50 shadow-lg p-3 px-4 md:px-6">
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <button onClick={onBack} className="px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-white/80">← Back</button>
+  <header className="compiler-header">
+    <div className="compiler-header-content">
+      <div className="compiler-title-section">
+        <button onClick={onBack} className="compiler-back-btn">← Back</button>
         <div>
-          <div className="text-lg font-bold text-gray-100">{title}</div>
-          <div className="text-xs text-white/60">{subtitle}</div>
+          <div className="compiler-title">{title}</div>
+          <div className="compiler-subtitle">{subtitle}</div>
         </div>
       </div>
-      <div className="flex items-center gap-3 text-xs text-white/60">
+      <div className="compiler-actions">
         {savedAt && <span>Saved {new Date(savedAt).toLocaleTimeString()}</span>}
         <button
           onClick={onSave}
           disabled={saving}
-          className="px-3 py-1.5 rounded-md bg-teal-500 hover:bg-teal-400 disabled:bg-teal-800 text-black font-semibold"
+          className="btn btn-primary"
         >
           {saving ? 'Saving…' : 'Save'}
         </button>

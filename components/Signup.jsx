@@ -25,18 +25,19 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f2135] text-white grid place-items-center px-4">
-      <form onSubmit={submit} className="w-full max-w-md bg-[#0e1c2d] rounded-xl border border-white/10 p-6 space-y-4">
-        <h1 className="text-xl font-semibold">Sign Up</h1>
+    <div className="auth-page">
+      <div className="auth-bg-gradient"></div>
+      <form onSubmit={submit} className="auth-container">
+        <h1 className="auth-title">Sign Up</h1>
         <input
-          className="w-full bg-white/5 rounded-lg px-3 py-2 outline-none border border-white/10"
+          className="auth-form-input"
           placeholder="Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
         />
         <input
-          className="w-full bg-white/5 rounded-lg px-3 py-2 outline-none border border-white/10"
+          className="auth-form-input"
           type="email"
           placeholder="Email"
           value={email}
@@ -44,22 +45,24 @@ const Signup = () => {
           required
         />
         <input
-          className="w-full bg-white/5 rounded-lg px-3 py-2 outline-none border border-white/10"
+          className="auth-form-input"
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        {error && <div className="text-red-400 text-sm">{error}</div>}
+        {error && <div className="auth-error">{error}</div>}
         <button
           type="submit"
           disabled={loading}
-          className="w-full px-3 py-2 rounded-md bg-teal-500 hover:bg-teal-400 disabled:bg-teal-800 text-black font-semibold"
+          className="auth-submit-btn"
         >
           {loading ? 'Signing up…' : 'Create Account'}
         </button>
-        <div className="text-sm text-white/70">Already have an account? <Link className="text-sky-400 hover:underline" to="/login">Log In</Link></div>
+        <div className="auth-footer">
+          Already have an account? <Link className="auth-footer-link" to="/login">Log In</Link>
+        </div>
       </form>
     </div>
   );

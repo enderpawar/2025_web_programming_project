@@ -55,6 +55,49 @@
             ]
           }
         ]
+      },
+      {
+        "id": "93c6b32f-8167-45d2-be12-5a739cbb61a6",
+        "title": "Two Sum",
+        "description": "Given an array of numbers and a target, return indices of the two numbers that add up to target.",
+        "difficulty": "Easy",
+        "functionName": "solve",
+        "language": "javascript",
+        "starterCode": "function solve(nums, target) {\n  // TODO\n}",
+        "samples": [
+          {
+            "input": [
+              [
+                2,
+                7,
+                11,
+                15
+              ],
+              9
+            ],
+            "output": [
+              0,
+              1
+            ]
+          }
+        ],
+        "tests": [
+          {
+            "input": [
+              [
+                2,
+                7,
+                11,
+                15
+              ],
+              9
+            ],
+            "output": [
+              0,
+              1
+            ]
+          }
+        ]
       }
     ]
   }

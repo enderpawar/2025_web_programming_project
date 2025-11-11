@@ -8,7 +8,7 @@ const PillInput = ({ placeholder, value, onChange }) => (
     value={value}
     onChange={(e) => onChange(e.target.value)}
     placeholder={placeholder}
-    className="w-full max-w-sm bg-transparent border-b border-white/20 focus:border-white/40 outline-none px-2 py-2 text-white placeholder-white/40"
+    className="rooms-search-input"
   />
 );
 
@@ -18,7 +18,7 @@ const Avatar = ({ logoUrl, title }) => {
       <img
         src={logoUrl}
         alt={title}
-        className="w-14 h-14 rounded-lg object-cover ring-1 ring-white/10 bg-white/5"
+        className="room-avatar-img"
       />
     );
   }
@@ -29,32 +29,32 @@ const Avatar = ({ logoUrl, title }) => {
     .slice(0, 2)
     .toUpperCase();
   return (
-    <div className="w-14 h-14 rounded-lg bg-white/10 grid place-items-center text-white/80 font-bold">
+    <div className="room-avatar-placeholder">
       {initials}
     </div>
   );
 };
 
 const RoomCard = ({ room, onClick, canDelete, onDelete }) => (
-  <div className="w-full bg-white/5 hover:bg-white/10 transition rounded-xl border border-white/10 p-4 flex items-center gap-4">
+  <div className="card room-card-flex">
     <button
       onClick={onClick}
-      className="flex-1 text-left flex items-center gap-4"
+      className="room-card-button"
     >
       <Avatar logoUrl={room.logoUrl} title={room.name} />
-      <div className="flex-1 overflow-hidden">
-        <div className="text-lg font-semibold text-white/90 truncate">{room.name}</div>
-        <div className="text-sm text-white/70 truncate">{room.authorName}</div>
-        <div className="text-xs text-white/50 truncate">{room.groupName}</div>
+      <div className="room-card-info">
+        <div className="room-card-name">{room.name}</div>
+        <div className="room-card-author">{room.authorName}</div>
+        <div className="room-card-group">{room.groupName}</div>
       </div>
-      <div className="text-white/30">›</div>
+      <div className="room-card-arrow">›</div>
     </button>
     {canDelete && (
       <button
         title="Delete room"
         aria-label="Delete room"
         onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
-        className="px-2 py-1 rounded bg-transparent hover:bg-white/10 text-white/70 text-xs"
+        className="btn-ghost btn-sm"
       >
         X
       </button>
@@ -72,22 +72,22 @@ const CreateRoomModal = ({ open, onClose, onCreate }) => {
 
   if (!open) return null;
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-lg bg-[#0f2135] rounded-xl border border-white/10 p-6 text-white">
-        <h3 className="text-lg font-semibold mb-4">Create Room</h3>
-        <div className="space-y-3">
-          <input className="w-full bg-white/5 rounded-lg px-3 py-2 outline-none border border-white/10" placeholder="Room Name" value={name} onChange={(e) => setName(e.target.value)} />
-          <input className="w-full bg-white/5 rounded-lg px-3 py-2 outline-none border border-white/10" placeholder="Group Name" value={groupName} onChange={(e) => setGroupName(e.target.value)} />
-          <input className="w-full bg-white/5 rounded-lg px-3 py-2 outline-none border border-white/10" placeholder="Author Name" value={authorName} onChange={(e) => setAuthorName(e.target.value)} />
-          <input className="w-full bg-white/5 rounded-lg px-3 py-2 outline-none border border-white/10" placeholder="Logo URL (optional)" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} />
-          <label className="flex items-center gap-2 text-sm text-white/80">
-            <input type="checkbox" className="accent-teal-500" checked={makePublic} onChange={(e)=>setMakePublic(e.target.checked)} /> Make Public
+    <div className="modal-overlay">
+      <div className="modal-content modal-content-wide">
+        <h3 className="modal-title">Create Room</h3>
+        <div className="modal-form">
+          <input className="input" placeholder="Room Name" value={name} onChange={(e) => setName(e.target.value)} />
+          <input className="input" placeholder="Group Name" value={groupName} onChange={(e) => setGroupName(e.target.value)} />
+          <input className="input" placeholder="Author Name" value={authorName} onChange={(e) => setAuthorName(e.target.value)} />
+          <input className="input" placeholder="Logo URL (optional)" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} />
+          <label className="checkbox-label">
+            <input type="checkbox" className="checkbox-input" checked={makePublic} onChange={(e)=>setMakePublic(e.target.checked)} /> Make Public
           </label>
         </div>
-        <div className="mt-5 flex justify-end gap-2">
-          <button className="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20" onClick={onClose}>Cancel</button>
+        <div className="modal-footer">
+          <button className="btn btn-ghost" onClick={onClose}>Cancel</button>
           <button
-            className="px-3 py-2 rounded-md bg-teal-500 hover:bg-teal-400 text-black font-semibold"
+            className="btn btn-primary"
             onClick={() => {
               if (!name.trim()) return;
               onCreate({
@@ -141,21 +141,21 @@ const Rooms = () => {
   }, [rooms, filters]);
 
   return (
-    <div className="min-h-screen bg-[#0f2135] text-white">
+    <div className="rooms-page">
       {/* Top bar */}
-      <header className="border-b border-white/10 bg-[#0e1c2d]/80 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="header">
+        <div className="header-container">
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="text-teal-300 font-extrabold tracking-widest text-xl hover:opacity-90 focus:outline-none"
+            className="logo focus:outline-none"
             aria-label="Go to main"
             title="Go to main"
           >
             JSC
           </button>
           {me && me.role === 'professor' && (
-            <button className="px-3 py-1.5 rounded-md text-sm bg-teal-500 hover:bg-teal-400 text-black font-semibold" onClick={() => setOpen(true)}>
+            <button className="btn btn-primary btn-sm" onClick={() => setOpen(true)}>
               CREATE
             </button>
           )}
@@ -163,14 +163,14 @@ const Rooms = () => {
       </header>
 
       {/* Filters */}
-      <div className="max-w-6xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-6">
+      <div className="rooms-filters-container">
         <PillInput placeholder="Room Name" value={filters.room} onChange={(v) => setFilters((s) => ({ ...s, room: v }))} />
         <PillInput placeholder="Group Name" value={filters.group} onChange={(v) => setFilters((s) => ({ ...s, group: v }))} />
         <PillInput placeholder="Author Name" value={filters.author} onChange={(v) => setFilters((s) => ({ ...s, author: v }))} />
       </div>
 
       {/* Rooms list */}
-      <div className="max-w-6xl mx-auto px-4 space-y-6 pb-12">
+      <div className="rooms-list-container">
         {filtered.map((room) => (
           <RoomCard
             key={room.id}
@@ -190,7 +190,7 @@ const Rooms = () => {
           />
         ))}
         {filtered.length === 0 && (
-          <div className="text-white/60 text-center py-16">No rooms found. Try creating one.</div>
+          <div className="rooms-empty-state">No rooms found. Try creating one.</div>
         )}
       </div>
 

@@ -1,5 +1,14 @@
 /* Global styles for JS Online Compiler. Intentionally minimal. */
 
+/* Import component styles */
+@import './components.css';
+@import './styles/Landing.css';
+@import './styles/Rooms.css';
+@import './styles/RoomProblems.css';
+@import './styles/RoomCompiler.css';
+@import './styles/Auth.css';
+@import './styles/Header.css';
+
 /* Floating background blobs for Landing hero */
 @keyframes jsc-float-1 {
 	0% { transform: translate3d(0,0,0) scale(1); }

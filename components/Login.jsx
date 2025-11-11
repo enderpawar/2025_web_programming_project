@@ -25,11 +25,12 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f2135] text-white grid place-items-center px-4">
-      <form onSubmit={submit} className="w-full max-w-md bg-[#0e1c2d] rounded-xl border border-white/10 p-6 space-y-4">
-        <h1 className="text-xl font-semibold">Log In</h1>
+    <div className="auth-page">
+      <div className="auth-bg-gradient"></div>
+      <form onSubmit={submit} className="auth-container">
+        <h1 className="auth-title">Log In</h1>
         <input
-          className="w-full bg-white/5 rounded-lg px-3 py-2 outline-none border border-white/10"
+          className="auth-form-input"
           type="email"
           placeholder="Email"
           value={email}
@@ -37,22 +38,24 @@ const Login = () => {
           required
         />
         <input
-          className="w-full bg-white/5 rounded-lg px-3 py-2 outline-none border border-white/10"
+          className="auth-form-input"
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        {error && <div className="text-red-400 text-sm">{error}</div>}
+        {error && <div className="auth-error">{error}</div>}
         <button
           type="submit"
           disabled={loading}
-          className="w-full px-3 py-2 rounded-md bg-teal-500 hover:bg-teal-400 disabled:bg-teal-800 text-black font-semibold"
+          className="auth-submit-btn"
         >
           {loading ? 'Logging in…' : 'Log In'}
         </button>
-        <div className="text-sm text-white/70">Don't have an account? <Link className="text-sky-400 hover:underline" to="/signup">Sign Up</Link></div>
+        <div className="auth-footer">
+          Don't have an account? <Link className="auth-footer-link" to="/signup">Sign Up</Link>
+        </div>
       </form>
     </div>
   );

@@ -14,10 +14,29 @@ Prerequisites: Node.js
 
 1. Install dependencies
    - `npm install`
-2. Start both client and server
+2. Configure Gemini API (for AI Hints feature)
+   - Get your API key from [Google AI Studio](https://ai.google.dev/)
+   - Create a `.env` file in the project root
+   - Add: `GEMINI_API_KEY=your_actual_api_key_here`
+3. Start both client and server
    - `npm run dev`
 
 The server runs on http://localhost:4000 and the client on http://localhost:5173 by default.
+
+### AI Hint Feature
+
+The project now includes an AI-powered hint system using Google's Gemini API:
+
+- Click the "💡 Get AI Hint" button in any problem to receive intelligent guidance
+- The AI analyzes the problem description and your current code
+- Provides helpful hints without giving away the complete solution
+- Requires `GEMINI_API_KEY` in `.env` file to work
+
+**To set up:**
+1. Visit [Google AI Studio](https://ai.google.dev/)
+2. Sign in with your Google account
+3. Click "Get API Key" and create a new key
+4. Copy the key to your `.env` file
 
 ### Admin setup
 

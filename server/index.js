@@ -8,6 +8,11 @@ import { createServer } from 'node:http';
 import { Server as SocketIOServer } from 'socket.io';
 import vm from 'node:vm';
 import fs from 'node:fs/promises';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 await ensureData(__dirname);
@@ -389,6 +394,77 @@ app.post('/api/rooms/:id/problems/:pid/submit', authRequired, async (req, res) =
     results.push({ index, input: t.input, expected: t.output, actual, pass: ok, error: err });
   }
   res.json({ passed: allPass, results });
+});
+
+// AI Hint endpoint using Gemini
+app.post('/api/hint', authRequired, async (req, res) => {
+  try {
+    const { problemDescription, problemTitle, currentCode, difficulty } = req.body || {};
+    
+    if (!problemDescription && !problemTitle) {
+      return res.status(400).json({ error: 'Problem description or title required' });
+    }
+
+    // Check if API key is configured
+    const apiKey = process.env.GEMINI_API_KEY;
+    console.log('API Key configured:', apiKey ? `Yes (${apiKey.substring(0, 10)}...)` : 'No');
+    
+    if (!apiKey || apiKey === 'your_api_key_here') {
+      return res.status(503).json({ 
+        error: 'Gemini API key not configured. Please add GEMINI_API_KEY to .env file' 
+      });
+    }
+
+    console.log('Initializing Gemini AI...');
+    // Initialize Gemini AI
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+
+    // Create a thoughtful prompt for hints
+    const prompt = `You are a helpful coding tutor. A student is working on the following problem:
+
+Title: ${problemTitle || 'Coding Problem'}
+Difficulty: ${difficulty || 'Unknown'}
+Description:
+${problemDescription}
+
+${currentCode ? `Their current code is:
+\`\`\`javascript
+${currentCode}
+\`\`\`
+` : 'They haven\'t started coding yet.'}
+
+Please provide a helpful hint that:
+1. Does NOT give away the complete solution
+2. Guides them toward the right approach
+3. Suggests what data structures or algorithms might be useful
+4. Points out any obvious issues in their current code (if provided)
+5. Encourages them to think about edge cases
+
+Keep the hint concise (3-5 sentences) and educational.`;
+
+    console.log('Sending request to Gemini API...');
+    const result = await model.generateContent(prompt);
+    console.log('Received response from Gemini API');
+    const response = await result.response;
+    const hint = response.text();
+    console.log('Hint generated successfully, length:', hint.length);
+
+    res.json({ hint });
+  } catch (error) {
+    console.error('=== Gemini API Error ===');
+    console.error('Error Name:', error.name);
+    console.error('Error Message:', error.message);
+    console.error('Error Stack:', error.stack);
+    console.error('Full Error:', JSON.stringify(error, null, 2));
+    console.error('=======================');
+    
+    res.status(500).json({ 
+      error: 'Failed to generate hint', 
+      details: error.message,
+      errorType: error.name
+    });
+  }
 });
 
 // Start HTTP + Socket.IO

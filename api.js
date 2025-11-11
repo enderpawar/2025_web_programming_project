@@ -82,6 +82,17 @@ export const api = {
   async createProblem(id, problem) {
     return req(`/api/rooms/${id}/problems`, { method: 'POST', body: problem });
   },
+  async getHint(problemTitle, problemDescription, currentCode, difficulty) {
+    return req('/api/hint', { 
+      method: 'POST', 
+      body: { 
+        problemTitle, 
+        problemDescription, 
+        currentCode, 
+        difficulty 
+      } 
+    });
+  },
   token,
   API_URL,
 };

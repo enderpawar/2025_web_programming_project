@@ -47,6 +47,9 @@ const RoomCompiler = () => {
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState(null);
   const [testResults, setTestResults] = useState(null);
+  const [aiHint, setAiHint] = useState('');
+  const [loadingHint, setLoadingHint] = useState(false);
+  const [showHint, setShowHint] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -171,6 +174,27 @@ const RoomCompiler = () => {
     }
   }, [roomId, problemId, code]);
 
+  const getAiHint = useCallback(async () => {
+    if (!problem) return;
+    setLoadingHint(true);
+    setShowHint(true);
+    setAiHint(''); // Clear previous hint
+    try {
+      const result = await api.getHint(
+        problem.title,
+        problem.description,
+        code,
+        problem.difficulty
+      );
+      setAiHint(result.hint);
+    } catch (e) {
+      console.error('AI Hint Error:', e);
+      setAiHint(`❌ Error: ${e.message}\n\n자세한 내용은 브라우저 콘솔을 확인하세요.`);
+    } finally {
+      setLoadingHint(false);
+    }
+  }, [problem, code]);
+
   const [pTitle, setPTitle] = useState('Two Sum');
   const [pDifficulty, setPDifficulty] = useState('Easy');
   const [pFunctionName, setPFunctionName] = useState('solve');
@@ -256,9 +280,53 @@ const RoomCompiler = () => {
           <div className="mt-4 flex gap-2">
             <button onClick={handleRunCode} disabled={isRunning} className="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 text-white text-sm">{isRunning ? 'Running…' : 'Run'}</button>
             {problem && (
-              <button onClick={runTests} className="px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-sm">Run Tests</button>
+              <>
+                <button onClick={runTests} className="px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-sm">Run Tests</button>
+                <button 
+                  onClick={getAiHint} 
+                  disabled={loadingHint}
+                  className="px-3 py-1.5 rounded bg-purple-600 hover:bg-purple-500 disabled:bg-purple-800 text-white text-sm flex items-center gap-1"
+                >
+                  {loadingHint ? (
+                    <>
+                      <span className="animate-spin">⚡</span>
+                      <span>Loading...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>💡</span>
+                      <span>Get AI Hint</span>
+                    </>
+                  )}
+                </button>
+              </>
             )}
           </div>
+          {showHint && (
+            <div className="mt-4 bg-purple-900/30 border border-purple-700/40 rounded-lg p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="font-semibold text-purple-300 flex items-center gap-2">
+                  <span>💡</span>
+                  <span>AI Hint</span>
+                </div>
+                <button 
+                  onClick={() => setShowHint(false)}
+                  className="text-white/60 hover:text-white/90 text-sm"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="text-sm text-white/90 whitespace-pre-wrap leading-relaxed">
+                {loadingHint ? (
+                  <div className="flex items-center gap-2 text-purple-300">
+                    <span className="animate-pulse">Thinking...</span>
+                  </div>
+                ) : (
+                  aiHint || 'Click "Get AI Hint" to receive guidance.'
+                )}
+              </div>
+            </div>
+          )}
           {problem && testResults && (
             <div className="mt-4 text-sm">
               {testResults.error && <div className="text-red-400">Error: {testResults.error}</div>}

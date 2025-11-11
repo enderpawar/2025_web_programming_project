@@ -1,6 +1,6 @@
 [
   {
-    "id": "93b53128-da05-4f54-aa02-d759f23dff64",
+    "id": "326a67c2-3f8f-4f2e-84ae-5d961d49dacc",
     "name": "test",
     "groupName": "test",
     "authorName": "test",
@@ -10,131 +10,319 @@
     "members": [
       "3f35d788-748b-4a84-95ac-f876c6814d83"
     ],
-    "createdAt": 1762829332012,
+    "createdAt": 1762831991520,
     "problems": [
       {
-        "id": "3c53d1a6-246c-4f97-bef2-ad079e9f7fb6",
-        "title": "커피 주문 Promise 만들기",
-        "description": "프롬프트 창을 통해 사용자에게 원하는 커피를 입력받고, 입력된 커피 메뉴가 있으면 '주문 접수' 메시지를 표시한 후 3초 후에 resolve 함수에 커피 메뉴를 전달하는 Promise를 생성하세요. 만약 커피 메뉴가 입력되지 않았으면 '주문이 없습니다'라는 오류 메시지를 reject 함수에 전달하세요. Promise 객체의 상태 변화를 콘솔에서 확인하고, `.then()`과 `.catch()`를 사용하여 성공 및 실패 시 적절한 메시지를 출력하세요.",
-        "difficulty": "Medium",
-        "functionName": "orderCoffee",
+        "id": "17f77def-c6a7-4cde-9cb0-eb75936efeaa",
+        "title": "JSON 객체 문자열로 변환",
+        "description": "JavaScript 객체를 JSON 문자열로 변환하는 함수를 작성하세요.",
+        "difficulty": "Easy",
+        "functionName": "convertObjectToJson",
         "language": "javascript",
-        "starterCode": "function orderCoffee() {\n  return new Promise((resolve, reject) => {\n    // TODO: Implement the coffee order logic here\n  });\n}\n\n// Example usage:\n// orderCoffee()\n//   .then(result => console.log(result))\n//   .catch(error => console.error(error));",
-        "samples": [],
-        "tests": [
+        "starterCode": "function convertObjectToJson(obj) {\n  // TODO: 객체를 JSON 문자열로 변환하여 반환하세요.\n  // obj: JavaScript 객체\n  // return: JSON 문자열\n}",
+        "solution": "function convertObjectToJson(obj) {\n  return JSON.stringify(obj);\n}",
+        "samples": [
           {
             "input": [
-              "아메리카노"
+              {
+                "name": "도레미",
+                "major": "컴퓨터공학",
+                "grade": 2
+              }
             ],
-            "output": "아메리카노 주문접수"
+            "output": "{\"name\":\"도레미\",\"major\":\"컴퓨터공학\",\"grade\":2}"
           },
           {
             "input": [
-              null
+              {
+                "name": "홍길동",
+                "age": 20
+              }
             ],
-            "output": "커피를주문하지않았습니다."
+            "output": "{\"name\":\"홍길동\",\"age\":20}"
+          }
+        ],
+        "tests": [
+          {
+            "input": [
+              {
+                "name": "도레미",
+                "major": "컴퓨터공학",
+                "grade": 2
+              }
+            ],
+            "output": "{\"name\":\"도레미\",\"major\":\"컴퓨터공학\",\"grade\":2}"
+          },
+          {
+            "input": [
+              {
+                "name": "홍길동",
+                "age": 20
+              }
+            ],
+            "output": "{\"name\":\"홍길동\",\"age\":20}"
+          },
+          {
+            "input": [
+              {}
+            ],
+            "output": "{}"
           }
         ]
       },
       {
-        "id": "6fe0540c-d2f7-4145-9dd9-12250b883c32",
-        "title": "async/await 를 사용한 커피 주문",
-        "description": "`async`와 `await`을 사용하여 커피 주문을 처리하는 함수를 작성하세요. `orderCoffee()` 함수는 커피 이름을 인자로 받아 Promise를 반환하며, 3초 후에 '커피 준비 완료!' 메시지와 함께 resolve됩니다. `displayCoffee()` 함수는 커피 이름을 인자로 받아 '주문하신 [커피 이름] 나왔습니다!' 메시지를 반환합니다. `main()` 함수에서 `async/await`를 사용하여 `orderCoffee()`를 호출하고, 결과 값을 `displayCoffee()`에 전달하여 최종 메시지를 콘솔에 출력하세요.",
+        "id": "6fd21960-b7b6-4358-8880-2bb888e23953",
+        "title": "JSON 문자열 객체로 변환",
+        "description": "JSON 문자열을 JavaScript 객체로 변환하는 함수를 작성하세요.  문자열이 유효한 JSON 형식이 아니면 null을 반환합니다.",
         "difficulty": "Medium",
-        "functionName": "main",
+        "functionName": "convertJsonToObject",
         "language": "javascript",
-        "starterCode": "async function orderCoffee(coffeeName) {\n  return new Promise(resolve => {\n    setTimeout(() => {\n      resolve('커피 준비 완료!');\n    }, 3000);\n  });\n}\n\nfunction displayCoffee(message, coffeeName) {\n  return `주문하신 ${coffeeName} 나왔습니다! ${message}`;\n}\n\nasync function main(coffeeName) {\n  // TODO: Implement the async/await logic for coffee ordering and display\n}",
-        "samples": [
-          {
-            "input": "라떼",
-            "output": "주문하신 라떼 나왔습니다! 커피 준비 완료!"
-          }
-        ],
-        "tests": []
-      },
-      {
-        "id": "63f7e898-bd47-43ac-b4cb-fb969f00fc38",
-        "title": "Two Sum",
-        "description": "정수 배열과 타겟이 주어졌을 때, 타겟에 합산되는 두 수의 인덱스를 반환하는 함수를 작성하세요.",
-        "difficulty": "Easy",
-        "functionName": "solve",
-        "language": "javascript",
-        "starterCode": "function solve(nums, target) {\n  // TODO\n}",
+        "starterCode": "function convertJsonToObject(jsonString) {\n  // TODO: JSON 문자열을 객체로 변환하여 반환하세요.\n  // jsonString: JSON 문자열\n  // return: JavaScript 객체 또는 null\n}",
+        "solution": "function convertJsonToObject(jsonString) {\n  try {\n    return JSON.parse(jsonString);\n  } catch (e) {\n    return null;\n  }\n}",
         "samples": [
           {
             "input": [
-              [
-                2,
-                7,
-                11,
-                15
-              ],
-              9
+              "{\"name\":\"도레미\",\"major\":\"컴퓨터공학\",\"grade\":2}"
             ],
-            "output": [
-              0,
-              1
-            ]
+            "output": {
+              "name": "도레미",
+              "major": "컴퓨터공학",
+              "grade": 2
+            }
+          },
+          {
+            "input": [
+              "{\"name\":\"홍길동\",\"age\":20}"
+            ],
+            "output": {
+              "name": "홍길동",
+              "age": 20
+            }
           }
         ],
         "tests": [
           {
             "input": [
-              [
-                2,
-                7,
-                11,
-                15
-              ],
-              9
+              "{\"name\":\"도레미\",\"major\":\"컴퓨터공학\",\"grade\":2}"
             ],
-            "output": [
-              0,
-              1
-            ]
+            "output": {
+              "name": "도레미",
+              "major": "컴퓨터공학",
+              "grade": 2
+            }
+          },
+          {
+            "input": [
+              "{\"name\":\"홍길동\",\"age\":20}"
+            ],
+            "output": {
+              "name": "홍길동",
+              "age": 20
+            }
+          },
+          {
+            "input": [
+              "{name:\"잘못된 형식\"}"
+            ],
+            "output": null
           }
         ]
       },
       {
-        "id": "72981473-2e41-463d-b233-cd16c0c750e0",
-        "title": "Two Sum",
-        "description": "정수 배열과 타겟이 주어졌을 때, 타겟에 합산되는 두 수의 인덱스를 반환하는 함수를 작성하세요.",
+        "id": "dba0113d-cb5d-405b-a7c2-2b200fbbf584",
+        "title": "HTTP 상태 코드 분류",
+        "description": "HTTP 상태 코드를 받아 해당 코드가 속하는 분류를 문자열로 반환하는 함수를 작성하세요. 분류는 다음과 같습니다:\n- 2XX: \"성공\"\n- 4XX: \"클라이언트 오류\"\n- 5XX: \"서버 오류\"\n- 그 외: \"알 수 없음\"",
         "difficulty": "Easy",
-        "functionName": "solve",
+        "functionName": "classifyHttpStatusCode",
         "language": "javascript",
-        "starterCode": "function solve(nums, target) {\n  // TODO\n}",
+        "starterCode": "function classifyHttpStatusCode(statusCode) {\n  // TODO: 상태 코드를 분류하고 문자열을 반환하세요.\n  // statusCode: HTTP 상태 코드 (정수)\n  // return: 분류 문자열\n}",
+        "solution": "function classifyHttpStatusCode(statusCode) {\n  if (statusCode >= 200 && statusCode < 300) {\n    return \"성공\";\n  } else if (statusCode >= 400 && statusCode < 500) {\n    return \"클라이언트 오류\";\n  } else if (statusCode >= 500 && statusCode < 600) {\n    return \"서버 오류\";\n  } else {\n    return \"알 수 없음\";\n  }\n}",
         "samples": [
           {
             "input": [
-              [
-                2,
-                7,
-                11,
-                15
-              ],
-              9
+              200
             ],
-            "output": [
-              0,
-              1
-            ]
+            "output": "성공"
+          },
+          {
+            "input": [
+              404
+            ],
+            "output": "클라이언트 오류"
+          },
+          {
+            "input": [
+              500
+            ],
+            "output": "서버 오류"
           }
         ],
         "tests": [
           {
             "input": [
-              [
-                2,
-                7,
-                11,
-                15
-              ],
-              9
+              200
             ],
-            "output": [
-              0,
-              1
-            ]
+            "output": "성공"
+          },
+          {
+            "input": [
+              404
+            ],
+            "output": "클라이언트 오류"
+          },
+          {
+            "input": [
+              500
+            ],
+            "output": "서버 오류"
+          },
+          {
+            "input": [
+              100
+            ],
+            "output": "알 수 없음"
+          },
+          {
+            "input": [
+              302
+            ],
+            "output": "알 수 없음"
+          }
+        ]
+      },
+      {
+        "id": "0e6552d6-ddfa-4165-9906-e75f0db3d9d8",
+        "title": "커피 주문 콜백 함수",
+        "description": "커피 종류를 입력받아 주문 접수 메시지를 출력하고, 2초 후에 준비 완료 메시지를 출력하는 콜백 함수를 작성하세요. `orderCoffee` 함수는 커피 종류와 콜백 함수를 인자로 받아야 합니다. 콜백 함수는 준비 완료 메시지를 출력해야 합니다.",
+        "difficulty": "Easy",
+        "functionName": "orderCoffee",
+        "language": "javascript",
+        "starterCode": "function orderCoffee(coffee, callback) {\n  console.log(`${coffee} 주문 접수`);\n  setTimeout(() => {\n    // TODO: Implement the callback function\n  }, 2000);\n}",
+        "solution": "function orderCoffee(coffee, callback) {\n  console.log(`${coffee} 주문 접수`);\n  setTimeout(() => {\n    callback(`${coffee} 준비 완료!`);\n  }, 2000);\n}",
+        "samples": [
+          {
+            "input": [
+              "아메리카노",
+              "console.log"
+            ],
+            "output": null
+          },
+          {
+            "input": [
+              "라떼",
+              "console.log"
+            ],
+            "output": null
+          }
+        ],
+        "tests": [
+          {
+            "input": [
+              "아메리카노",
+              "console.log"
+            ],
+            "output": null
+          },
+          {
+            "input": [
+              "라떼",
+              "console.log"
+            ],
+            "output": null
+          },
+          {
+            "input": [
+              "에스프레소",
+              "console.log"
+            ],
+            "output": null
+          }
+        ]
+      },
+      {
+        "id": "a7ea7f38-20dd-4e22-ac2f-2aabbfe42d52",
+        "title": "프로미스 기반 피자 만들기",
+        "description": "피자 도우 준비, 토핑 완료, 굽기 완료 순서대로 프로미스를 사용하여 피자를 만드는 과정을 구현하세요. 각 단계는 `setTimeout`을 사용하여 비동기적으로 실행되어야 합니다. `makePizza` 함수는 프로미스를 반환하며, 각 단계가 완료될 때마다 콘솔에 메시지를 출력해야 합니다.",
+        "difficulty": "Medium",
+        "functionName": "makePizza",
+        "language": "javascript",
+        "starterCode": "function makePizza() {\n  // TODO: Implement the pizza making process using promises\n}",
+        "solution": "function makePizza() {\n  const pizza = () => {\n    return new Promise((resolve, reject) => {\n      resolve(\"피자를 주문합니다.\");\n    });\n  };\n  const step1 = (message) => {\n    console.log(message);\n    return new Promise((resolve, reject) => {\n      setTimeout(() => {\n        resolve('피자 도우 준비');\n      }, 1000);\n    });\n  };\n  const step2 = (message) => {\n    console.log(message);\n    return new Promise((resolve, reject) => {\n      setTimeout(() => {\n        resolve('토핑 완료');\n      }, 500);\n    });\n  };\n  const step3 = (message) => {\n    console.log(message);\n    return new Promise((resolve, reject) => {\n      setTimeout(() => {\n        resolve('굽기 완료');\n      }, 1000);\n    });\n  };\n  return pizza()\n    .then(step1)\n    .then(step2)\n    .then(step3)\n    .then(console.log)\n    .then(() => {\n      console.log('피자가 준비되었습니다. 🍕');\n    });\n}",
+        "samples": [
+          {
+            "input": [],
+            "output": null
+          }
+        ],
+        "tests": [
+          {
+            "input": [],
+            "output": null
+          }
+        ]
+      },
+      {
+        "id": "4a54fc8b-3767-4ce3-881c-a06f8bf8b82e",
+        "title": "Async/Await를 사용한 인사말",
+        "description": "좋아하는 주제를 반환하는 `getFavoriteSubject` 함수와 인사말을 반환하는 `createGreeting` 함수를 async/await를 사용하여 작성하세요. `greet` 함수는 `getFavoriteSubject`를 await하여 결과를 얻고, 그 결과를 `createGreeting`에 전달하여 최종 인사말을 콘솔에 출력해야 합니다.",
+        "difficulty": "Medium",
+        "functionName": "greet",
+        "language": "javascript",
+        "starterCode": "async function getFavoriteSubject() {\n  // TODO: Return a promise that resolves with a subject\n}\n\nasync function createGreeting(subject) {\n  // TODO: Return a promise that resolves with a greeting\n}\n\nasync function greet() {\n  // TODO: Implement the greeting process using async/await\n}",
+        "solution": "async function getFavoriteSubject() {\n  return \"JavaScript\";\n}\n\nasync function createGreeting(subject) {\n  return `Hello, ${subject}!`;\n}\n\nasync function greet() {\n  const subject = await getFavoriteSubject();\n  const greeting = await createGreeting(subject);\n  console.log(greeting);\n}",
+        "samples": [
+          {
+            "input": [],
+            "output": null
+          }
+        ],
+        "tests": [
+          {
+            "input": [],
+            "output": null
+          }
+        ]
+      },
+      {
+        "id": "e16fc112-3e68-4b93-8c46-c4057b234090",
+        "title": "async/await 를 사용한 좋아하는 과목 표시",
+        "description": "async/await 를 사용하여 좋아하는 과목을 입력받고 'Hello, [과목]' 형태로 반환하는 함수를 만드세요.",
+        "difficulty": "Easy",
+        "functionName": "displayFavoriteSubject",
+        "language": "javascript",
+        "starterCode": "async function displayFavoriteSubject(subject) {\n  // TODO: Implement the function\n  // return: 'Hello, [subject]'\n}",
+        "samples": [
+          {
+            "input": [
+              "Javascript"
+            ],
+            "output": "Hello, Javascript"
+          },
+          {
+            "input": [
+              "Python"
+            ],
+            "output": "Hello, Python"
+          }
+        ],
+        "tests": [
+          {
+            "input": [
+              "React"
+            ],
+            "output": "Hello, React"
+          },
+          {
+            "input": [
+              "Node.js"
+            ],
+            "output": "Hello, Node.js"
+          },
+          {
+            "input": [
+              "C++"
+            ],
+            "output": "Hello, C++"
           }
         ]
       }

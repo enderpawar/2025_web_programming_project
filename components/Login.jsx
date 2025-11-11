@@ -27,7 +27,7 @@ const Login = () => {
   return (
     <div className="auth-page">
       <div className="auth-bg-gradient"></div>
-      <form onSubmit={submit} className="auth-container">
+      <form onSubmit={submit} className="auth-container" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <h1 className="auth-title">Log In</h1>
         <input
           className="auth-form-input"

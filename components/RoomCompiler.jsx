@@ -316,6 +316,21 @@ const RoomCompiler = () => {
                 </div>
               )}
 
+              {/* Model Solution (Professor Only) */}
+              {me?.role === 'professor' && problem.solution && (
+                <div className="mt-4">
+                  <div className="font-semibold mb-2 text-amber-400">🔒 Model Solution (Professor Only)</div>
+                  <div className="bg-amber-900/20 rounded p-3 border border-amber-500/30">
+                    <div className="text-xs text-amber-200 mb-2">
+                      AI-generated reference solution for validation purposes
+                    </div>
+                    <pre className="bg-black/40 rounded p-3 text-xs font-mono text-amber-100 overflow-x-auto">
+                      {problem.solution}
+                    </pre>
+                  </div>
+                </div>
+              )}
+
               {/* Hidden Test Cases Info */}
               {Array.isArray(problem.tests) && problem.tests.length > 0 && (
                 <div className="mt-4">
@@ -387,13 +402,18 @@ const RoomCompiler = () => {
                 <div className="space-y-2">
                   {testResults.results.map((r, i) => (
                     <div key={i} className={`rounded p-2 ${r.pass ? 'bg-green-900/30 border border-green-700/40' : 'bg-red-900/30 border border-red-700/40'}`}>
-                      <div className="font-mono">Input: {JSON.stringify(r.input)}</div>
-                      <div className="font-mono">Expected: {JSON.stringify(r.expected)}</div>
-                      <div className="font-mono">Actual: {JSON.stringify(r.actual)}</div>
-                      {r.error && <div className="text-red-300">{r.error}</div>}
+                      <div className="font-mono text-xs mb-1">Test Case {i + 1}: {r.pass ? '✓ Passed' : '✗ Failed'}</div>
+                      {r.error && <div className="text-red-300 text-xs">{r.error}</div>}
+                      {!r.pass && (
+                        <div className="text-xs text-white/60 mt-1">
+                          Check your logic and try again. Use custom test to debug.
+                        </div>
+                      )}
                     </div>
                   ))}
-                  <div className={`font-semibold ${testResults.passed ? 'text-green-400' : 'text-red-400'}`}>{testResults.passed ? 'All tests passed 🎉' : 'Some tests failed'}</div>
+                  <div className={`font-semibold ${testResults.passed ? 'text-green-400' : 'text-red-400'}`}>
+                    {testResults.passed ? 'All tests passed 🎉' : `${testResults.results.filter(r => r.pass).length} / ${testResults.results.length} tests passed`}
+                  </div>
                 </div>
               )}
             </div>

@@ -590,6 +590,8 @@ CRITICAL REQUIREMENTS:
 3. The "input" field MUST be an array of arguments (even if there's only one argument, wrap it in an array).
 4. The "output" field MUST be the exact expected return value.
 5. Test cases MUST be executable - students will run their code against these exact inputs and outputs.
+6. Solutions MUST be synchronous and NOT use setTimeout, setInterval, Promise, async/await, or any asynchronous code.
+7. Solutions should use only basic JavaScript features: loops, conditionals, arrays, objects, strings, numbers, Map, Set.
 
 REQUIRED STRUCTURE for each problem:
 {
@@ -598,6 +600,7 @@ REQUIRED STRUCTURE for each problem:
   "difficulty": "Easy" | "Medium" | "Hard",
   "functionName": "exactFunctionName",
   "starterCode": "function exactFunctionName(param1, param2) {\\n  // TODO: Implement this function\\n  // Expected return: description\\n}",
+  "solution": "function exactFunctionName(param1, param2) {\\n  // Complete working solution\\n  return correctImplementation;\\n}",
   "samples": [
     {"input": [arg1, arg2, ...], "output": expectedValue}
   ],
@@ -616,6 +619,7 @@ Example 1 - Single parameter (array):
   "difficulty": "Easy",
   "functionName": "arraySum",
   "starterCode": "function arraySum(arr) {\\n  // TODO: Calculate and return sum of all elements\\n  // arr: array of numbers\\n  // return: number (sum)\\n}",
+  "solution": "function arraySum(arr) {\\n  return arr.reduce((sum, num) => sum + num, 0);\\n}",
   "samples": [
     {"input": [[1, 2, 3, 4]], "output": 10},
     {"input": [[5, 10, 15]], "output": 30}
@@ -634,6 +638,7 @@ Example 2 - Multiple parameters:
   "difficulty": "Easy",
   "functionName": "twoSum",
   "starterCode": "function twoSum(nums, target) {\\n  // TODO: Find two numbers that add up to target\\n  // nums: array of integers\\n  // target: integer\\n  // return: array of two indices [index1, index2]\\n}",
+  "solution": "function twoSum(nums, target) {\\n  const map = new Map();\\n  for (let i = 0; i < nums.length; i++) {\\n    const complement = target - nums[i];\\n    if (map.has(complement)) {\\n      return [map.get(complement), i];\\n    }\\n    map.set(nums[i], i);\\n  }\\n  return [];\\n}",
   "samples": [
     {"input": [[2, 7, 11, 15], 9], "output": [0, 1]},
     {"input": [[3, 2, 4], 6], "output": [1, 2]}
@@ -652,6 +657,7 @@ Example 3 - String manipulation:
   "difficulty": "Easy",
   "functionName": "reverseString",
   "starterCode": "function reverseString(str) {\\n  // TODO: Reverse the string\\n  // str: string\\n  // return: reversed string\\n}",
+  "solution": "function reverseString(str) {\\n  return str.split('').reverse().join('');\\n}",
   "samples": [
     {"input": ["hello"], "output": "olleh"},
     {"input": ["world"], "output": "dlrow"}
@@ -708,6 +714,7 @@ Return ONLY the JSON array (no markdown, no code blocks):`;
       functionName: p.functionName || 'solve',
       language: 'javascript',
       starterCode: p.starterCode || '',
+      solution: p.solution || '', // Store solution for professors
       samples: Array.isArray(p.samples) ? p.samples : [],
       tests: Array.isArray(p.tests) ? p.tests : []
     }));

@@ -56,14 +56,6 @@ const Landing = () => {
             >
               Start studying
             </button>
-            {!me && (
-              <button
-                onClick={() => navigate('/signup')}
-                className="landing-btn-outline"
-              >
-                Sign up
-              </button>
-            )}
           </div>
         </section>
 
@@ -130,7 +122,7 @@ const LandingRightMenu = () => {
     return (
       <div className="landing-menu">
         <button onClick={() => navigate('/login')} className="landing-menu-btn">Log In</button>
-        <button onClick={() => navigate('/signup')} className="btn-primary">SIGNUP</button>
+        <button onClick={() => navigate('/signup')} className="landing-menu-signup">SIGN UP</button>
       </div>
     );
   }

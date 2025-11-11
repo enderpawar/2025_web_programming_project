@@ -67,43 +67,73 @@ const CreateProblemModal = ({ open, onClose, onCreate }) => {
   );
 };
 
-const InviteMemberModal = ({ open, onClose, roomId }) => {
+const InviteMemberModal = ({ open, onClose, roomId, ownerId }) => {
   const [users, setUsers] = useState([]);
   const [members, setMembers] = useState([]);
   const [selectedEmail, setSelectedEmail] = useState('');
   const [message, setMessage] = useState('');
 
+  const fetchMembers = async () => {
+    try {
+      const allUsers = await api.getAllUsers();
+      const roomMembers = await api.getRoomMembers(roomId);
+      setUsers(allUsers);
+      setMembers(roomMembers);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
     if (open) {
-      (async () => {
-        try {
-          const allUsers = await api.getAllUsers();
-          const roomMembers = await api.getRoomMembers(roomId);
-          setUsers(allUsers);
-          setMembers(roomMembers);
-        } catch (e) {
-          console.error(e);
-        }
-      })();
+      fetchMembers();
     }
   }, [open, roomId]);
 
   const availableUsers = users.filter(u => !members.some(m => m.id === u.id));
+
+  const handleRemoveMember = async (userId) => {
+    const member = members.find(m => m.id === userId);
+    if (!member) return;
+    
+    const confirmRemove = confirm(`"${member.name}"을(를) 그룹에서 제거하시겠습니까?`);
+    if (!confirmRemove) return;
+
+    try {
+      await api.removeMember(roomId, userId);
+      setMessage(`${member.name}을(를) 제거했습니다.`);
+      await fetchMembers();
+      setTimeout(() => setMessage(''), 3000);
+    } catch (e) {
+      setMessage(`오류: ${e.message}`);
+    }
+  };
 
   if (!open) return null;
 
   return (
     <div className="modal-overlay">
       <div className="modal-content invite-modal">
-        <h3 className="modal-title">그룹 멤버 초대</h3>
+        <h3 className="modal-title">멤버 관리</h3>
         
         <div className="invite-members-section">
           <label className="form-label">현재 멤버 ({members.length}명)</label>
           <div className="invite-members-list">
             {members.map(m => (
               <div key={m.id} className="invite-member-item">
-                <span className="invite-member-name">{m.name}</span>
-                <span className="invite-member-email">{m.email}</span>
+                <div className="invite-member-info">
+                  <span className="invite-member-name">{m.name}</span>
+                  <span className="invite-member-email">{m.email}</span>
+                </div>
+                {m.id !== ownerId && (
+                  <button 
+                    className="remove-member-btn"
+                    onClick={() => handleRemoveMember(m.id)}
+                    title="멤버 제거"
+                  >
+                    ✕
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -126,7 +156,7 @@ const InviteMemberModal = ({ open, onClose, roomId }) => {
         </div>
 
         {message && (
-          <div className={`invite-message ${message.includes('성공') ? 'invite-message-success' : 'invite-message-error'}`}>
+          <div className={`invite-message ${message.includes('성공') || message.includes('제거') ? 'invite-message-success' : 'invite-message-error'}`}>
             {message}
           </div>
         )}
@@ -145,8 +175,7 @@ const InviteMemberModal = ({ open, onClose, roomId }) => {
               try {
                 await api.inviteMember(roomId, selectedEmail);
                 setMessage('초대 성공!');
-                const roomMembers = await api.getRoomMembers(roomId);
-                setMembers(roomMembers);
+                await fetchMembers();
                 setSelectedEmail('');
                 setTimeout(() => setMessage(''), 3000);
               } catch (e) {
@@ -197,7 +226,7 @@ const RoomProblems = () => {
                   className="btn btn-secondary btn-sm" 
                   onClick={()=>setInviteOpen(true)}
                 >
-                  멤버 초대
+                  멤버 관리
                 </button>
                 <button className="btn btn-primary btn-sm" onClick={()=>setOpen(true)}>CREATE PROBLEM</button>
               </>
@@ -237,7 +266,12 @@ const RoomProblems = () => {
           setOpen(false);
         }catch(e){ alert(e.message); }
       }} />
-      <InviteMemberModal open={inviteOpen} onClose={()=>setInviteOpen(false)} roomId={roomId} />
+      <InviteMemberModal 
+        open={inviteOpen} 
+        onClose={()=>setInviteOpen(false)} 
+        roomId={roomId}
+        ownerId={room?.ownerId}
+      />
     </div>
   );
 };

@@ -291,6 +291,52 @@ app.post('/api/rooms/:id/invite', authRequired, async (req, res) => {
   });
 });
 
+// Remove member from room (professor/owner only)
+app.delete('/api/rooms/:id/members/:userId', authRequired, async (req, res) => {
+  const rooms = await readJSON('rooms.json');
+  const users = await readJSON('users.json');
+  
+  const roomIdx = rooms.findIndex((r) => r.id === req.params.id);
+  if (roomIdx === -1) return res.status(404).json({ error: 'Room not found' });
+  
+  const room = rooms[roomIdx];
+  const currentUser = users.find((u) => u.id === req.user.id);
+  
+  // Only room owner (professor) can remove members
+  if (room.ownerId !== req.user.id || currentUser.role !== 'professor') {
+    return res.status(403).json({ error: 'Only room owner can remove members' });
+  }
+  
+  const userIdToRemove = req.params.userId;
+  
+  // Cannot remove the owner
+  if (userIdToRemove === room.ownerId) {
+    return res.status(400).json({ error: 'Cannot remove the room owner' });
+  }
+  
+  // Initialize members array if not exists
+  if (!room.members) {
+    room.members = [room.ownerId];
+  }
+  
+  // Check if user is a member
+  if (!room.members.includes(userIdToRemove)) {
+    return res.status(404).json({ error: 'User is not a member of this room' });
+  }
+  
+  // Remove member
+  room.members = room.members.filter(id => id !== userIdToRemove);
+  rooms[roomIdx] = room;
+  await writeJSON('rooms.json', rooms);
+  
+  const removedUser = users.find((u) => u.id === userIdToRemove);
+  res.json({ 
+    ok: true, 
+    message: `${removedUser?.name || 'User'} has been removed from the room`,
+    members: room.members 
+  });
+});
+
 // Get room members (owner only)
 app.get('/api/rooms/:id/members', authRequired, async (req, res) => {
   const rooms = await readJSON('rooms.json');

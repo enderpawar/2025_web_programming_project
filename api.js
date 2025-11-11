@@ -99,6 +99,9 @@ export const api = {
   async inviteMember(roomId, userEmail) {
     return req(`/api/rooms/${roomId}/invite`, { method: 'POST', body: { userEmail } });
   },
+  async removeMember(roomId, userId) {
+    return req(`/api/rooms/${roomId}/members/${userId}`, { method: 'DELETE' });
+  },
   async getRoomMembers(roomId) {
     return req(`/api/rooms/${roomId}/members`);
   },

@@ -152,6 +152,10 @@ const RoomCompiler = () => {
 
   const handleClearConsole = useCallback(() => setOutput([]), []);
 
+  const addOutput = useCallback((line) => {
+    setOutput((prev) => [...prev, line]);
+  }, []);
+
   const save = useCallback(async () => {
     setSaving(true);
     try {
@@ -404,6 +408,7 @@ const RoomCompiler = () => {
             onClear={handleClearConsole} 
             problem={problem}
             code={code}
+            addOutput={addOutput}
           />
         </div>
       </div>

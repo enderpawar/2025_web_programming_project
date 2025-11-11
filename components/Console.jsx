@@ -33,7 +33,7 @@ const getStyleForType = (type) => {
   }
 };
 
-const Console = ({ output, onClear, problem, code, onCustomTest }) => {
+const Console = ({ output, onClear, problem, code, onCustomTest, addOutput }) => {
   const [customInput, setCustomInput] = useState('');
   const [customTestResult, setCustomTestResult] = useState(null);
   const [showCustomTest, setShowCustomTest] = useState(false);
@@ -41,9 +41,19 @@ const Console = ({ output, onClear, problem, code, onCustomTest }) => {
   const handleRunCustomTest = () => {
     if (!customInput.trim()) return;
     
+    // Add info message to console
+    if (addOutput) {
+      addOutput({ type: OutputType.INFO, message: '🧪 Running custom test...' });
+    }
+    
     try {
       const parsedInput = JSON.parse(customInput);
       const inputArray = Array.isArray(parsedInput) ? parsedInput : [parsedInput];
+      
+      // Log input to console
+      if (addOutput) {
+        addOutput({ type: OutputType.LOG, message: `Input: ${JSON.stringify(parsedInput)}` });
+      }
       
       const func = new Function(`return (${code})`)();
       if (typeof func !== 'function') {
@@ -51,6 +61,12 @@ const Console = ({ output, onClear, problem, code, onCustomTest }) => {
       }
       
       const result = func(...inputArray);
+      
+      // Log output to console
+      if (addOutput) {
+        addOutput({ type: OutputType.SUCCESS, message: `Output: ${JSON.stringify(result)}` });
+      }
+      
       setCustomTestResult({
         success: true,
         input: parsedInput,
@@ -61,6 +77,11 @@ const Console = ({ output, onClear, problem, code, onCustomTest }) => {
         onCustomTest({ success: true, input: parsedInput, output: result });
       }
     } catch (e) {
+      // Log error to console
+      if (addOutput) {
+        addOutput({ type: OutputType.ERROR, message: `Error: ${e.message}` });
+      }
+      
       setCustomTestResult({
         success: false,
         error: e.message
@@ -80,7 +101,7 @@ const Console = ({ output, onClear, problem, code, onCustomTest }) => {
           {problem && (
             <button
               onClick={() => setShowCustomTest(!showCustomTest)}
-              className="flex items-center px-3 py-2 bg-orange-600 text-white font-semibold rounded-md hover:bg-orange-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-75 text-sm"
+              className="flex items-center px-3 py-2 bg-emerald-600 text-white font-semibold rounded-md hover:bg-emerald-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-opacity-75 text-sm"
             >
               {showCustomTest ? '✕ Close Test' : '🧪 Custom Test'}
             </button>
@@ -111,14 +132,14 @@ const Console = ({ output, onClear, problem, code, onCustomTest }) => {
       {/* Custom Test Section */}
       {showCustomTest && problem && (
         <div className="flex-shrink-0 p-3 bg-gray-900/50 border-b border-gray-700/50">
-          <div className="text-xs font-semibold text-orange-400 mb-2">🧪 Custom Test Input</div>
+          <div className="text-xs font-semibold text-emerald-400 mb-2">🧪 Custom Test Input</div>
           <div className="text-xs text-gray-400 mb-2">
             Enter input in JSON format (e.g., [[2,7,11,15],9])
           </div>
           <div className="flex gap-2">
             <input
               type="text"
-              className="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500"
               placeholder='[[2,7,11,15],9]'
               value={customInput}
               onChange={(e) => setCustomInput(e.target.value)}
@@ -131,7 +152,7 @@ const Console = ({ output, onClear, problem, code, onCustomTest }) => {
             <button
               onClick={handleRunCustomTest}
               disabled={!customInput.trim()}
-              className="px-4 py-2 bg-orange-600 hover:bg-orange-500 disabled:bg-orange-800 disabled:cursor-not-allowed text-white font-semibold rounded text-sm transition-all"
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800 disabled:cursor-not-allowed text-white font-semibold rounded text-sm transition-all"
             >
               Run
             </button>

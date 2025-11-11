@@ -4,6 +4,16 @@ import { api, setToken } from '../api.js';
 
 const Landing = () => {
   const navigate = useNavigate();
+  const [me, setMe] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const who = await api.me();
+        setMe(who);
+      } catch {}
+    })();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0f2135] text-white flex flex-col">
@@ -46,12 +56,14 @@ const Landing = () => {
             >
               Start studying
             </button>
-            <button
-              onClick={() => navigate('/signup')}
-              className="px-5 md:px-6 py-3 rounded-md border border-white/20 hover:border-white/40 text-white/90"
-            >
-              Sign up
-            </button>
+            {!me && (
+              <button
+                onClick={() => navigate('/signup')}
+                className="px-5 md:px-6 py-3 rounded-md border border-white/20 hover:border-white/40 text-white/90"
+              >
+                Sign up
+              </button>
+            )}
           </div>
         </section>
 

@@ -112,13 +112,13 @@ const InviteMemberModal = ({ open, onClose, roomId }) => {
         <div className="mb-4">
           <label className="text-sm text-white/70 mb-2 block">초대할 사용자 선택</label>
           <select 
-            className="w-full bg-white/5 rounded-lg px-3 py-2 outline-none border border-white/10"
+            className="w-full bg-[#1a2332] text-white rounded-lg px-3 py-2 outline-none border border-white/20 focus:border-teal-400"
             value={selectedEmail}
             onChange={(e) => setSelectedEmail(e.target.value)}
           >
-            <option value="">-- 사용자 선택 --</option>
+            <option value="" className="bg-[#1a2332] text-white/60">-- 사용자 선택 --</option>
             {availableUsers.map(u => (
-              <option key={u.id} value={u.email}>
+              <option key={u.id} value={u.email} className="bg-[#1a2332] text-white">
                 {u.name} ({u.email}) - {u.role}
               </option>
             ))}

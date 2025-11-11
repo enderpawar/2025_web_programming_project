@@ -420,12 +420,12 @@ app.post('/api/hint', authRequired, async (req, res) => {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
-    // Create a thoughtful prompt for hints in Korean
-    const prompt = `당신은 친절한 코딩 튜터입니다. 학생이 다음 문제를 풀고 있습니다:
+    // Create a thoughtful prompt for hints in Korean with skeleton code
+    const prompt = `당신은 친절하고 상세한 코딩 튜터입니다. 학생이 다음 문제를 풀고 있습니다:
 
 제목: ${problemTitle || '코딩 문제'}
 난이도: ${difficulty || '알 수 없음'}
-설명:
+문제 설명:
 ${problemDescription}
 
 ${currentCode ? `학생의 현재 코드:
@@ -434,15 +434,19 @@ ${currentCode}
 \`\`\`
 ` : '아직 코드를 작성하지 않았습니다.'}
 
-다음 조건을 만족하는 도움이 되는 힌트를 한국어로 제공해주세요:
-1. 완전한 정답 코드를 알려주지 마세요
-2. 올바른 접근 방법으로 유도해주세요
-3. 유용한 자료구조나 알고리즘을 제안해주세요
-4. 현재 코드의 명백한 문제점을 지적해주세요 (코드가 제공된 경우)
-5. Edge case를 고려하도록 격려해주세요
+다음 형식으로 자세한 힌트를 **한국어로** 제공해주세요:
 
-힌트는 간결하게 3-5문장으로 작성하고, 교육적이어야 합니다.
-반드시 한국어로 답변해주세요.`;
+1. **접근 방법** (2-3문장으로 핵심 아이디어 설명)
+2. **추천 자료구조/알고리즘** (구체적으로 어떤 것을 사용하면 좋은지)
+3. **스켈레톤 코드** (실제 동작하는 코드 구조를 보여주되, 핵심 로직은 주석이나 TODO로 남겨둠)
+4. **시간 복잡도** (예상되는 시간/공간 복잡도)
+5. **주의사항** (Edge case나 놓치기 쉬운 부분)
+
+${currentCode ? '현재 코드의 문제점이나 개선 방향도 함께 알려주세요.' : ''}
+
+스켈레톤 코드는 반드시 \`\`\`javascript 코드블록으로 감싸서 제공하고, 
+학생이 구조를 이해하고 스스로 채워넣을 수 있도록 작성해주세요.
+완전한 정답은 절대 알려주지 마세요.`;
 
     console.log('Sending request to Gemini API...');
     const result = await model.generateContent(prompt);

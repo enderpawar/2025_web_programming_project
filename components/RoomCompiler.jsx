@@ -195,13 +195,13 @@ const RoomCompiler = () => {
     }
   }, [problem, code]);
 
-  const [pTitle, setPTitle] = useState('Two Sum');
-  const [pDifficulty, setPDifficulty] = useState('Easy');
+  const [pTitle, setPTitle] = useState('두 수의 합');
+  const [pDifficulty, setPDifficulty] = useState('쉬움');
   const [pFunctionName, setPFunctionName] = useState('solve');
-  const [pDescription, setPDescription] = useState('Given an array of numbers and a target, return indices of the two numbers that add up to target.');
-  const [pStarter, setPStarter] = useState('function solve(nums, target) {\n  // TODO\n}');
-  const [pSamples, setPSamples] = useState('[{"input":[[2,7,11,15],9],"output":[0,1]}]');
-  const [pTests, setPTests] = useState('[{"input":[[2,7,11,15],9],"output":[0,1]}]');
+  const [pDescription, setPDescription] = useState('정수 배열 nums와 목표값 target이 주어집니다. 배열에서 두 수를 더해서 target이 되는 두 수의 인덱스를 배열로 반환하세요.\n\n각 입력에는 정확히 하나의 해답만 존재하며, 같은 원소를 두 번 사용할 수 없습니다.\n\n예시:\n입력: nums = [2, 7, 11, 15], target = 9\n출력: [0, 1]\n설명: nums[0] + nums[1] = 2 + 7 = 9 이므로 [0, 1]을 반환합니다.');
+  const [pStarter, setPStarter] = useState('function solve(nums, target) {\n  // 여기에 코드를 작성하세요\n  // nums: 정수 배열\n  // target: 목표값\n  // 반환: 두 수의 인덱스 [index1, index2]\n}');
+  const [pSamples, setPSamples] = useState('[{"input":[[2,7,11,15],9],"output":[0,1]},{"input":[[3,2,4],6],"output":[1,2]}]');
+  const [pTests, setPTests] = useState('[{"input":[[2,7,11,15],9],"output":[0,1]},{"input":[[3,2,4],6],"output":[1,2]},{"input":[[3,3],6],"output":[0,1]}]');
   const [perr, setPErr] = useState('');
 
   const createProblem = useCallback(async () => {

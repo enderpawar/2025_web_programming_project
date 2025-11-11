@@ -10,6 +10,9 @@ import vm from 'node:vm';
 import fs from 'node:fs/promises';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
+import multer from 'multer';
+import pdfParse from 'pdf-parse';
+import crypto from 'node:crypto';
 
 // Load environment variables
 dotenv.config();
@@ -20,6 +23,9 @@ await ensureData(__dirname);
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '1mb' }));
+
+// multer for file uploads (memory storage)
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
 // Health
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
@@ -495,6 +501,139 @@ app.post('/api/rooms/:id/problems', authRequired, async (req, res) => {
   rooms[idx] = room;
   await writeJSON('rooms.json', rooms);
   res.status(201).json(problem);
+});
+
+// Generate problems from uploaded PDF (owner/professor only)
+app.post('/api/rooms/:id/generate-problems', authRequired, upload.single('file'), async (req, res) => {
+  try {
+    console.log('=== PDF Problem Generation Started ===');
+    const roomId = req.params.id;
+    const buffer = req.file?.buffer;
+    
+    if (!buffer) {
+      console.log('Error: No file uploaded');
+      return res.status(400).json({ error: 'PDF file is required' });
+    }
+
+    console.log('PDF file received, size:', buffer.length, 'bytes');
+
+    // extract text from pdf
+    console.log('Parsing PDF...');
+    const parsed = await pdfParse(buffer);
+    const text = (parsed && parsed.text) ? parsed.text.substring(0, 10000) : '';
+    console.log('PDF text extracted, length:', text.length, 'characters');
+    console.log('First 200 chars:', text.substring(0, 200));
+
+    // Check API key
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey || apiKey === 'your_api_key_here') {
+      console.log('Error: Gemini API key not configured');
+      return res.status(503).json({ error: 'Gemini API key not configured' });
+    }
+
+    const users = await readJSON('users.json');
+    const currentUser = users.find((u) => u.id === req.user.id);
+
+    const rooms = await readJSON('rooms.json');
+    const idx = rooms.findIndex((r) => r.id === roomId);
+    if (idx === -1) return res.status(404).json({ error: 'Room not found' });
+    const room = rooms[idx];
+
+    // Only owner/professor can generate
+    if (room.ownerId !== req.user.id && currentUser?.role !== 'professor') {
+      return res.status(403).json({ error: 'Only room owner (professor) can generate problems' });
+    }
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+
+    const prompt = `You are an AI that creates programming practice problems from lecture materials.
+
+Given the lecture content below, generate exactly 3 programming problems suitable for students.
+
+IMPORTANT: Return ONLY a JSON array, nothing else. No markdown, no code blocks, no explanations.
+
+Each problem object must have:
+- title: string (problem title)
+- description: string (detailed problem description in Korean)
+- difficulty: string ("Easy", "Medium", or "Hard")
+- functionName: string (the function name to implement)
+- starterCode: string (JavaScript starter code with function signature and TODO comment)
+- samples: array of test cases (optional, can be empty [])
+- tests: array of test cases with {input: array, output: any} format
+
+Example format:
+[
+  {
+    "title": "두 수의 합",
+    "description": "배열에서 두 수를 더해 목표값이 되는 인덱스를 찾으세요.",
+    "difficulty": "Easy",
+    "functionName": "twoSum",
+    "starterCode": "function twoSum(nums, target) {\\n  // TODO\\n}",
+    "samples": [{"input": [[2,7,11,15], 9], "output": [0,1]}],
+    "tests": [{"input": [[2,7,11,15], 9], "output": [0,1]}]
+  }
+]
+
+Lecture content:
+${text}
+
+Return only the JSON array:`;
+
+    console.log('Calling Gemini API for problem generation...');
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    let generatedText = response.text().trim();
+    
+    console.log('Raw AI response:', generatedText.substring(0, 500));
+
+    // Remove markdown code blocks if present
+    if (generatedText.startsWith('```')) {
+      generatedText = generatedText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    }
+
+    let problems;
+    try {
+      problems = JSON.parse(generatedText);
+    } catch (e) {
+      console.error('JSON parse error:', e.message);
+      console.error('Generated text:', generatedText);
+      return res.status(500).json({ error: 'AI returned invalid JSON', details: generatedText.substring(0, 1000) });
+    }
+
+    if (!Array.isArray(problems) || problems.length === 0) {
+      console.log('Error: No problems in parsed result');
+      return res.status(500).json({ error: 'No problems generated' });
+    }
+
+    console.log('Successfully generated', problems.length, 'problems');
+
+    if (!Array.isArray(room.problems)) room.problems = [];
+    const created = problems.map((p) => ({ 
+      id: crypto.randomUUID(), 
+      title: p.title || 'Untitled Problem',
+      description: p.description || '',
+      difficulty: p.difficulty || 'Easy',
+      functionName: p.functionName || 'solve',
+      language: 'javascript',
+      starterCode: p.starterCode || '',
+      samples: Array.isArray(p.samples) ? p.samples : [],
+      tests: Array.isArray(p.tests) ? p.tests : []
+    }));
+    // prepend generated problems
+    room.problems = [...created, ...room.problems];
+    rooms[idx] = room;
+    await writeJSON('rooms.json', rooms);
+
+    console.log('Problems saved to room successfully');
+    console.log('=== PDF Problem Generation Complete ===');
+    res.json({ problems: created });
+  } catch (err) {
+    console.error('=== Generate problems error ===');
+    console.error('Error:', err);
+    console.error('Stack:', err.stack);
+    res.status(500).json({ error: 'Failed to generate problems', details: err.message });
+  }
 });
 
 app.get('/api/rooms/:id/problems/:pid', authRequired, async (req, res) => {

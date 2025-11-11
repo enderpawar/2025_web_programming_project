@@ -26,7 +26,7 @@ const ProblemCard = ({ problem, onClick, canDelete, onDelete }) => (
   </div>
 );
 
-const CreateProblemModal = ({ open, onClose, onCreate }) => {
+const CreateProblemModal = ({ open, onClose, onCreate, roomId, onGenerateComplete }) => {
   const [title, setTitle] = useState('Two Sum');
   const [difficulty, setDifficulty] = useState('Easy');
   const [functionName, setFunctionName] = useState('solve');
@@ -35,11 +35,16 @@ const CreateProblemModal = ({ open, onClose, onCreate }) => {
   const [samples, setSamples] = useState('[{"input":[[2,7,11,15],9],"output":[0,1]}]');
   const [tests, setTests] = useState('[{"input":[[2,7,11,15],9],"output":[0,1]}]');
   const [err, setErr] = useState('');
+  const [pdfFile, setPdfFile] = useState(null);
+  const [generating, setGenerating] = useState(false);
   if (!open) return null;
   return (
     <div className="modal-overlay">
       <div className="modal-content create-problem-modal">
         <h3 className="modal-title">Create Problem</h3>
+        <div style={{ marginBottom: 12 }}>
+          <input type="file" accept="application/pdf" onChange={(e)=>setPdfFile(e.target.files?.[0]||null)} />
+        </div>
         <div className="create-problem-form">
           <input className="input" placeholder="Title" value={title} onChange={(e)=>setTitle(e.target.value)} />
           <div className="form-row">
@@ -54,6 +59,26 @@ const CreateProblemModal = ({ open, onClose, onCreate }) => {
         </div>
         <div className="modal-footer">
           <button className="btn btn-ghost" onClick={onClose}>Cancel</button>
+          <button
+            className="btn btn-secondary"
+            disabled={!pdfFile || generating}
+            onClick={async ()=>{
+              if (!pdfFile || !roomId) return setErr('PDF 파일과 roomId가 필요합니다');
+              try{
+                setGenerating(true);
+                const res = await api.generateProblemsFromPdf(roomId, pdfFile);
+                // res should contain { problems: [...] }
+                if (res && Array.isArray(res.problems) && res.problems.length) {
+                  onGenerateComplete?.(res.problems);
+                  setGenerating(false);
+                  onClose();
+                } else {
+                  setErr('생성된 문제가 없습니다');
+                  setGenerating(false);
+                }
+              }catch(e){ setErr(e.message); setGenerating(false); }
+            }}
+          >{generating ? 'Generating...' : 'Generate from PDF'}</button>
           <button className="btn btn-primary" onClick={()=>{
             try{
               const s = samples ? JSON.parse(samples) : [];
@@ -259,7 +284,11 @@ const RoomProblems = () => {
           )}
         </div>
       </div>
-      <CreateProblemModal open={open} onClose={()=>setOpen(false)} onCreate={async (payload)=>{
+      <CreateProblemModal open={open} onClose={()=>setOpen(false)} roomId={roomId} onGenerateComplete={(generated)=>{
+        // prepend generated problems to list
+        setProblems((prev)=>[...generated, ...prev]);
+        setOpen(false);
+      }} onCreate={async (payload)=>{
         try{
           const created = await api.createProblem(roomId, payload);
           setProblems((prev)=>[created, ...prev]);

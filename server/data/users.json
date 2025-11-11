@@ -18,7 +18,8 @@
     "email": "test2@naver.com",
     "name": "asdfasdf",
     "passwordHash": "$2a$10$wIIUicLzYbHgmModtX.3S.WIZP6zu86izqwcy/KUqCo3QFFiAe1wq",
-    "createdAt": 1761619641472
+    "createdAt": 1761619641472,
+    "role": "student"
   },
   {
     "id": "3ba923ca-789c-4140-919c-445d1822cc5a",

@@ -1,5 +1,18 @@
 [
   {
+    "id": "c3a553f4-ee61-4b50-a779-829cc3bfb500",
+    "name": "1",
+    "groupName": "1",
+    "authorName": "1",
+    "logoUrl": "1",
+    "ownerId": "3f35d788-748b-4a84-95ac-f876c6814d83",
+    "public": true,
+    "members": [
+      "3f35d788-748b-4a84-95ac-f876c6814d83"
+    ],
+    "createdAt": 1762828201304
+  },
+  {
     "id": "f71c59de-a195-4fed-b86e-948e8f4763c2",
     "name": "1",
     "groupName": "1",
@@ -10,6 +23,64 @@
     "members": [
       "3f35d788-748b-4a84-95ac-f876c6814d83"
     ],
-    "createdAt": 1762827362539
+    "createdAt": 1762827362539,
+    "problems": [
+      {
+        "id": "db7b004c-1dd9-4946-ae08-ba0b8bd2ca6c",
+        "title": "커피 주문 처리 (콜백 함수)",
+        "description": "커피 종류를 인자로 받아 주문을 접수하고, 3초 후에 주문 완료 메시지를 콘솔에 출력하는 `orderCoffee` 함수를 작성하세요. 이후, `displayCompletion` 함수를 만들어 주문 완료 메시지를 출력하도록 하고, `orderCoffee` 함수 내에서 `setTimeout`을 사용하여 3초 후 `displayCompletion` 함수를 호출하여 주문 완료를 알리세요.",
+        "difficulty": "Easy",
+        "functionName": "orderCoffee",
+        "language": "javascript",
+        "starterCode": "function orderCoffee(coffee, callback) {\n  console.log(`${coffee} 주문 접수`);\n  // TODO: 3초 후 callback 함수 호출\n}\n\nfunction displayCompletion(coffee) {\n  console.log(`${coffee} 준비 완료`);\n}\n\n// 예시: orderCoffee(\"아메리카노\", displayCompletion);",
+        "samples": [],
+        "tests": [
+          {
+            "input": [
+              "라떼"
+            ],
+            "output": "라떼 주문 접수 (3초 후) 라떼 준비 완료"
+          },
+          {
+            "input": [
+              "에스프레소"
+            ],
+            "output": "에스프레소 주문 접수 (3초 후) 에스프레소 준비 완료"
+          }
+        ]
+      },
+      {
+        "id": "6d4d992c-bdb3-438d-87f1-559687b8123a",
+        "title": "피자 만들기 (프로미스 체이닝)",
+        "description": "다음과 같은 단계로 피자를 만드는 과정을 프로미스 체이닝으로 구현하세요.\n1. `prepareDough`: '피자 도우 준비'를 resolve 하는 프로미스를 반환합니다 (2초).\n2. `addToppings`: '토핑 추가'를 resolve 하는 프로미스를 반환합니다 (1초).\n3. `bakePizza`: '피자 굽기'를 resolve 하는 프로미스를 반환합니다 (2초).\n각 단계가 완료되면 콘솔에 해당 메시지를 출력하고, 마지막 단계에서는 '피자가 준비되었습니다!'를 출력하세요.",
+        "difficulty": "Medium",
+        "functionName": "makePizza",
+        "language": "javascript",
+        "starterCode": "function prepareDough() {\n  return new Promise((resolve) => {\n    setTimeout(() => {\n      // TODO: '피자 도우 준비' resolve\n    }, 2000);\n  });\n}\n\nfunction addToppings() {\n  return new Promise((resolve) => {\n    setTimeout(() => {\n      // TODO: '토핑 추가' resolve\n    }, 1000);\n  });\n}\n\nfunction bakePizza() {\n  return new Promise((resolve) => {\n    setTimeout(() => {\n      // TODO: '피자 굽기' resolve\n    }, 2000);\n  });\n}\n\nfunction makePizza() {\n  // TODO: 프로미스 체이닝으로 피자 만들기\n}",
+        "samples": [],
+        "tests": [
+          {
+            "input": [],
+            "output": "피자 도우 준비 (2초 후) 토핑 추가 (1초 후) 피자 굽기 (2초 후) 피자가 준비되었습니다!"
+          }
+        ]
+      },
+      {
+        "id": "f8afb686-ac88-43f3-a17f-0b7cfe19b32d",
+        "title": "학생 정보 가져오기 (fetch API, async/await)",
+        "description": "`student-data.json` 파일에서 학생 정보를 가져와서 콘솔에 출력하는 `getStudentData` 함수를 `fetch` API와 `async/await`를 사용하여 구현하세요.\n\n`student-data.json` 파일의 내용은 다음과 같습니다.\n\n[\n  {\n    \"name\": \"김민지\",\n    \"major\": \"컴퓨터공학\",\n    \"grade\": 3\n  },\n  {\n    \"name\": \"박서준\",\n    \"major\": \"전자공학\",\n    \"grade\": 2\n  }\n]\n\n`getStudentData` 함수는 각 학생의 이름, 전공, 학년을 콘솔에 출력해야 합니다.",
+        "difficulty": "Hard",
+        "functionName": "getStudentData",
+        "language": "javascript",
+        "starterCode": "async function getStudentData() {\n  // TODO: fetch API를 사용하여 student-data.json에서 학생 정보 가져오기\n  // TODO: 가져온 데이터를 JSON 형태로 변환\n  // TODO: 각 학생의 이름, 전공, 학년을 콘솔에 출력\n}\n\n// getStudentData() 호출",
+        "samples": [],
+        "tests": [
+          {
+            "input": [],
+            "output": "김민지 컴퓨터공학 3 박서준 전자공학 2 (콘솔 출력)"
+          }
+        ]
+      }
+    ]
   }
 ]

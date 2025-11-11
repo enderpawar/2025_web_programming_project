@@ -99,6 +99,23 @@ export const api = {
   async inviteMember(roomId, userEmail) {
     return req(`/api/rooms/${roomId}/invite`, { method: 'POST', body: { userEmail } });
   },
+  async generateProblemsFromPdf(roomId, file) {
+    // file is a File object from browser
+    const form = new FormData();
+    form.append('file', file);
+    const headers = {};
+    if (token) headers.Authorization = `Bearer ${token}`;
+    const res = await fetch(`${API_URL}/api/rooms/${roomId}/generate-problems`, {
+      method: 'POST',
+      headers,
+      body: form,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || `Request failed: ${res.status}`);
+    }
+    return res.json();
+  },
   async removeMember(roomId, userId) {
     return req(`/api/rooms/${roomId}/members/${userId}`, { method: 'DELETE' });
   },

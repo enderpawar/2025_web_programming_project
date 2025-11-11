@@ -13,7 +13,90 @@
     "createdAt": 1762829332012,
     "problems": [
       {
+        "id": "3c53d1a6-246c-4f97-bef2-ad079e9f7fb6",
+        "title": "커피 주문 Promise 만들기",
+        "description": "프롬프트 창을 통해 사용자에게 원하는 커피를 입력받고, 입력된 커피 메뉴가 있으면 '주문 접수' 메시지를 표시한 후 3초 후에 resolve 함수에 커피 메뉴를 전달하는 Promise를 생성하세요. 만약 커피 메뉴가 입력되지 않았으면 '주문이 없습니다'라는 오류 메시지를 reject 함수에 전달하세요. Promise 객체의 상태 변화를 콘솔에서 확인하고, `.then()`과 `.catch()`를 사용하여 성공 및 실패 시 적절한 메시지를 출력하세요.",
+        "difficulty": "Medium",
+        "functionName": "orderCoffee",
+        "language": "javascript",
+        "starterCode": "function orderCoffee() {\n  return new Promise((resolve, reject) => {\n    // TODO: Implement the coffee order logic here\n  });\n}\n\n// Example usage:\n// orderCoffee()\n//   .then(result => console.log(result))\n//   .catch(error => console.error(error));",
+        "samples": [],
+        "tests": [
+          {
+            "input": [
+              "아메리카노"
+            ],
+            "output": "아메리카노 주문접수"
+          },
+          {
+            "input": [
+              null
+            ],
+            "output": "커피를주문하지않았습니다."
+          }
+        ]
+      },
+      {
+        "id": "6fe0540c-d2f7-4145-9dd9-12250b883c32",
+        "title": "async/await 를 사용한 커피 주문",
+        "description": "`async`와 `await`을 사용하여 커피 주문을 처리하는 함수를 작성하세요. `orderCoffee()` 함수는 커피 이름을 인자로 받아 Promise를 반환하며, 3초 후에 '커피 준비 완료!' 메시지와 함께 resolve됩니다. `displayCoffee()` 함수는 커피 이름을 인자로 받아 '주문하신 [커피 이름] 나왔습니다!' 메시지를 반환합니다. `main()` 함수에서 `async/await`를 사용하여 `orderCoffee()`를 호출하고, 결과 값을 `displayCoffee()`에 전달하여 최종 메시지를 콘솔에 출력하세요.",
+        "difficulty": "Medium",
+        "functionName": "main",
+        "language": "javascript",
+        "starterCode": "async function orderCoffee(coffeeName) {\n  return new Promise(resolve => {\n    setTimeout(() => {\n      resolve('커피 준비 완료!');\n    }, 3000);\n  });\n}\n\nfunction displayCoffee(message, coffeeName) {\n  return `주문하신 ${coffeeName} 나왔습니다! ${message}`;\n}\n\nasync function main(coffeeName) {\n  // TODO: Implement the async/await logic for coffee ordering and display\n}",
+        "samples": [
+          {
+            "input": "라떼",
+            "output": "주문하신 라떼 나왔습니다! 커피 준비 완료!"
+          }
+        ],
+        "tests": []
+      },
+      {
         "id": "63f7e898-bd47-43ac-b4cb-fb969f00fc38",
+        "title": "Two Sum",
+        "description": "정수 배열과 타겟이 주어졌을 때, 타겟에 합산되는 두 수의 인덱스를 반환하는 함수를 작성하세요.",
+        "difficulty": "Easy",
+        "functionName": "solve",
+        "language": "javascript",
+        "starterCode": "function solve(nums, target) {\n  // TODO\n}",
+        "samples": [
+          {
+            "input": [
+              [
+                2,
+                7,
+                11,
+                15
+              ],
+              9
+            ],
+            "output": [
+              0,
+              1
+            ]
+          }
+        ],
+        "tests": [
+          {
+            "input": [
+              [
+                2,
+                7,
+                11,
+                15
+              ],
+              9
+            ],
+            "output": [
+              0,
+              1
+            ]
+          }
+        ]
+      },
+      {
+        "id": "72981473-2e41-463d-b233-cd16c0c750e0",
         "title": "Two Sum",
         "description": "정수 배열과 타겟이 주어졌을 때, 타겟에 합산되는 두 수의 인덱스를 반환하는 함수를 작성하세요.",
         "difficulty": "Easy",

@@ -2,49 +2,205 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api.js';
 
-const ProblemCard = ({ problem, onClick, canDelete, onDelete }) => (
-  <div className="problem-card">
-    <button onClick={onClick} className="problem-card-button">
-      <div className="problem-card-icon">
-        {problem.difficulty?.[0]?.toUpperCase() || 'P'}
+const ProblemCard = ({ problem, onClick, canDelete, onDelete, onEdit }) => {
+  const [showMenu, setShowMenu] = useState(false);
+  
+  return (
+    <div style={{ marginBottom: '12px' }}>
+      <div className="problem-card">
+        <button onClick={onClick} className="problem-card-button">
+          <div className="problem-card-icon">
+            {problem.difficulty?.[0]?.toUpperCase() || 'P'}
+          </div>
+          <div className="problem-card-info">
+            <div className="problem-card-title">{problem.title}</div>
+            <div className="problem-card-meta">{problem.difficulty} • {problem.functionName || 'solve'}</div>
+          </div>
+        </button>
+        {canDelete && problem.id !== 'legacy' && (
+          <button
+            title="Options"
+            aria-label="Toggle options"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowMenu(!showMenu);
+            }}
+            className="problem-card-delete-btn"
+            style={{ 
+              fontSize: '18px',
+              transform: showMenu ? 'rotate(180deg)' : 'rotate(0deg)',
+              transition: 'transform 0.3s ease'
+            }}
+          >
+            ▼
+          </button>
+        )}
       </div>
-      <div className="problem-card-info">
-        <div className="problem-card-title">{problem.title}</div>
-        <div className="problem-card-meta">{problem.difficulty} • {problem.functionName || 'solve'}</div>
-      </div>
-    </button>
-    {canDelete && problem.id !== 'legacy' && (
-      <button
-        title="Delete problem"
-        aria-label="Delete problem"
-        onClick={onDelete}
-        className="problem-card-delete-btn"
-      >
-        X
-      </button>
-    )}
-  </div>
-);
+      
+      {/* Slide-down menu */}
+      {canDelete && problem.id !== 'legacy' && (
+        <div 
+          style={{
+            maxHeight: showMenu ? '60px' : '0',
+            overflow: 'hidden',
+            transition: 'max-height 0.3s ease',
+            background: 'linear-gradient(to bottom, #1f2937, #111827)',
+            borderRadius: showMenu ? '0 0 12px 12px' : '0',
+            marginTop: showMenu ? '0' : '0',
+            border: showMenu ? '1px solid #374151' : 'none',
+            borderTop: 'none'
+          }}
+        >
+          <div style={{
+            display: 'flex',
+            gap: '8px',
+            padding: '10px 16px',
+            justifyContent: 'flex-end',
+            alignItems: 'center'
+          }}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowMenu(false);
+                onEdit?.();
+              }}
+              style={{
+                padding: '8px 16px',
+                background: '#1e40af',
+                border: 'none',
+                borderRadius: '6px',
+                color: 'white',
+                cursor: 'pointer',
+                fontSize: '13px',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                transition: 'all 0.2s',
+                minWidth: '100px'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = '#2563eb';
+                e.target.style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = '#1e40af';
+                e.target.style.transform = 'translateY(0)';
+              }}
+            >
+              <span>✏️</span>
+              <span>수정하기</span>
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowMenu(false);
+                onDelete?.();
+              }}
+              style={{
+                padding: '8px 16px',
+                background: '#dc2626',
+                border: 'none',
+                borderRadius: '6px',
+                color: 'white',
+                cursor: 'pointer',
+                fontSize: '13px',
+                fontWeight: '600',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px',
+                transition: 'all 0.2s',
+                minWidth: '100px'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = '#ef4444';
+                e.target.style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = '#dc2626';
+                e.target.style.transform = 'translateY(0)';
+              }}
+            >
+              <span>🗑️</span>
+              <span>삭제하기</span>
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
-const CreateProblemModal = ({ open, onClose, onCreate, roomId, onGenerateComplete }) => {
-  const [title, setTitle] = useState('Two Sum');
-  const [difficulty, setDifficulty] = useState('Easy');
-  const [functionName, setFunctionName] = useState('solve');
-  const [description, setDescription] = useState('정수 배열과 타겟이 주어졌을 때, 타겟에 합산되는 두 수의 인덱스를 반환하는 함수를 작성하세요.');
-  const [starterCode, setStarterCode] = useState('function solve(nums, target) {\n  // TODO\n}');
-  const [samplePairs, setSamplePairs] = useState([{ input: '[[2,7,11,15],9]', output: '[0,1]' }]);
-  const [testPairs, setTestPairs] = useState([{ input: '[[2,7,11,15],9]', output: '[0,1]' }]);
+const CreateProblemModal = ({ open, onClose, onCreate, roomId, onGenerateComplete, editMode, initialProblem }) => {
+  const [title, setTitle] = useState(editMode && initialProblem ? initialProblem.title : 'Two Sum');
+  const [difficulty, setDifficulty] = useState(editMode && initialProblem ? initialProblem.difficulty : 'Easy');
+  const [functionName, setFunctionName] = useState(editMode && initialProblem ? initialProblem.functionName : 'solve');
+  const [description, setDescription] = useState(editMode && initialProblem ? initialProblem.description : '정수 배열과 타겟이 주어졌을 때, 타겟에 합산되는 두 수의 인덱스를 반환하는 함수를 작성하세요.');
+  const [starterCode, setStarterCode] = useState(editMode && initialProblem ? initialProblem.starterCode : 'function solve(nums, target) {\n  // TODO\n}');
+  
+  const initSamplePairs = () => {
+    if (editMode && initialProblem && Array.isArray(initialProblem.samples) && initialProblem.samples.length > 0) {
+      return initialProblem.samples.map(s => ({
+        input: JSON.stringify(s.input),
+        output: JSON.stringify(s.output)
+      }));
+    }
+    return [{ input: '[[2,7,11,15],9]', output: '[0,1]' }];
+  };
+  
+  const initTestPairs = () => {
+    if (editMode && initialProblem && Array.isArray(initialProblem.tests) && initialProblem.tests.length > 0) {
+      return initialProblem.tests.map(t => ({
+        input: JSON.stringify(t.input),
+        output: JSON.stringify(t.output)
+      }));
+    }
+    return [{ input: '[[2,7,11,15],9]', output: '[0,1]' }];
+  };
+  
+  const [samplePairs, setSamplePairs] = useState(initSamplePairs());
+  const [testPairs, setTestPairs] = useState(initTestPairs());
   const [err, setErr] = useState('');
   const [pdfFile, setPdfFile] = useState(null);
   const [generating, setGenerating] = useState(false);
+  
+  // Reset form when editMode or initialProblem changes
+  useEffect(() => {
+    if (open) {
+      if (editMode && initialProblem) {
+        setTitle(initialProblem.title || 'Two Sum');
+        setDifficulty(initialProblem.difficulty || 'Easy');
+        setFunctionName(initialProblem.functionName || 'solve');
+        setDescription(initialProblem.description || '');
+        setStarterCode(initialProblem.starterCode || 'function solve() {\n  // TODO\n}');
+        setSamplePairs(initSamplePairs());
+        setTestPairs(initTestPairs());
+      } else {
+        setTitle('Two Sum');
+        setDifficulty('Easy');
+        setFunctionName('solve');
+        setDescription('정수 배열과 타겟이 주어졌을 때, 타겟에 합산되는 두 수의 인덱스를 반환하는 함수를 작성하세요.');
+        setStarterCode('function solve(nums, target) {\n  // TODO\n}');
+        setSamplePairs([{ input: '[[2,7,11,15],9]', output: '[0,1]' }]);
+        setTestPairs([{ input: '[[2,7,11,15],9]', output: '[0,1]' }]);
+      }
+      setErr('');
+      setPdfFile(null);
+    }
+  }, [open, editMode, initialProblem]);
+  
   if (!open) return null;
   return (
-    <div className="modal-overlay">
-      <div className="modal-content create-problem-modal">
-        <h3 className="modal-title">Create Problem</h3>
-        <div style={{ marginBottom: 12 }}>
-          <input type="file" accept="application/pdf" onChange={(e)=>setPdfFile(e.target.files?.[0]||null)} />
-        </div>
+    <div className="modal-overlay" style={{ overflowY: 'auto', display: 'flex', alignItems: 'flex-start', paddingTop: '40px', paddingBottom: '40px' }}>
+      <div className="modal-content create-problem-modal" style={{ margin: '0 auto', maxHeight: 'none' }}>
+        <h3 className="modal-title">{editMode ? 'Edit Problem' : 'Create Problem'}</h3>
+        {!editMode && (
+          <div style={{ marginBottom: 12 }}>
+            <input type="file" accept="application/pdf" onChange={(e)=>setPdfFile(e.target.files?.[0]||null)} />
+          </div>
+        )}
         <div className="create-problem-form">
           <input className="input" placeholder="Title" value={title} onChange={(e)=>setTitle(e.target.value)} />
           <div className="form-row">
@@ -176,26 +332,28 @@ const CreateProblemModal = ({ open, onClose, onCreate, roomId, onGenerateComplet
         </div>
         <div className="modal-footer">
           <button className="btn btn-ghost" onClick={onClose}>Cancel</button>
-          <button
-            className="btn btn-secondary"
-            disabled={!pdfFile || generating}
-            onClick={async ()=>{
-              if (!pdfFile || !roomId) return setErr('PDF 파일과 roomId가 필요합니다');
-              try{
-                setGenerating(true);
-                const res = await api.generateProblemsFromPdf(roomId, pdfFile);
-                // res should contain { problems: [...] }
-                if (res && Array.isArray(res.problems) && res.problems.length) {
-                  onGenerateComplete?.(res.problems);
-                  setGenerating(false);
-                  onClose();
-                } else {
-                  setErr('생성된 문제가 없습니다');
-                  setGenerating(false);
-                }
-              }catch(e){ setErr(e.message); setGenerating(false); }
-            }}
-          >{generating ? 'Generating...' : 'Generate from PDF'}</button>
+          {!editMode && (
+            <button
+              className="btn btn-secondary"
+              disabled={!pdfFile || generating}
+              onClick={async ()=>{
+                if (!pdfFile || !roomId) return setErr('PDF 파일과 roomId가 필요합니다');
+                try{
+                  setGenerating(true);
+                  const res = await api.generateProblemsFromPdf(roomId, pdfFile);
+                  // res should contain { problems: [...] }
+                  if (res && Array.isArray(res.problems) && res.problems.length) {
+                    onGenerateComplete?.(res.problems);
+                    setGenerating(false);
+                    onClose();
+                  } else {
+                    setErr('생성된 문제가 없습니다');
+                    setGenerating(false);
+                  }
+                }catch(e){ setErr(e.message); setGenerating(false); }
+              }}
+            >{generating ? 'Generating...' : 'Generate from PDF'}</button>
+          )}
           <button className="btn btn-primary" onClick={()=>{
             try{
               // Convert input/output pairs to JSON format
@@ -207,11 +365,24 @@ const CreateProblemModal = ({ open, onClose, onCreate, roomId, onGenerateComplet
                 input: JSON.parse(pair.input),
                 output: JSON.parse(pair.output)
               }));
-              onCreate({ title, difficulty, functionName, description, language:'javascript', starterCode, samples:s, tests:t });
+              const problemData = { 
+                title, 
+                difficulty, 
+                functionName, 
+                description, 
+                language:'javascript', 
+                starterCode, 
+                samples:s, 
+                tests:t 
+              };
+              if (editMode && initialProblem) {
+                problemData.id = initialProblem.id;
+              }
+              onCreate(problemData);
             }catch(e){ 
               setErr('Invalid JSON format in input/output fields. Please check your syntax.'); 
             }
-          }}>Create</button>
+          }}>{editMode ? 'Update' : 'Create'}</button>
         </div>
       </div>
     </div>
@@ -350,6 +521,8 @@ const RoomProblems = () => {
   const [open, setOpen] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [me, setMe] = useState(null);
+  const [editMode, setEditMode] = useState(false);
+  const [editingProblem, setEditingProblem] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -394,8 +567,13 @@ const RoomProblems = () => {
               problem={p}
               onClick={()=>navigate(`/rooms/${roomId}/problems/${p.id}`)}
               canDelete={me && room && me.id === room.ownerId}
+              onEdit={()=>{
+                setEditingProblem(p);
+                setEditMode(true);
+                setOpen(true);
+              }}
               onDelete={async (e)=>{
-                e.stopPropagation();
+                e?.stopPropagation();
                 const ok = confirm(`Delete problem "${p.title}"? This cannot be undone.`);
                 if (!ok) return;
                 try{
@@ -410,17 +588,40 @@ const RoomProblems = () => {
           )}
         </div>
       </div>
-      <CreateProblemModal open={open} onClose={()=>setOpen(false)} roomId={roomId} onGenerateComplete={(generated)=>{
-        // prepend generated problems to list
-        setProblems((prev)=>[...generated, ...prev]);
-        setOpen(false);
-      }} onCreate={async (payload)=>{
-        try{
-          const created = await api.createProblem(roomId, payload);
-          setProblems((prev)=>[created, ...prev]);
+      <CreateProblemModal 
+        open={open} 
+        onClose={()=>{
           setOpen(false);
-        }catch(e){ alert(e.message); }
-      }} />
+          setEditMode(false);
+          setEditingProblem(null);
+        }} 
+        roomId={roomId} 
+        editMode={editMode}
+        initialProblem={editingProblem}
+        onGenerateComplete={(generated)=>{
+          // prepend generated problems to list
+          setProblems((prev)=>[...generated, ...prev]);
+          setOpen(false);
+          setEditMode(false);
+          setEditingProblem(null);
+        }} 
+        onCreate={async (payload)=>{
+          try{
+            if (editMode && payload.id) {
+              // Update existing problem
+              const updated = await api.updateProblem(roomId, payload.id, payload);
+              setProblems((prev)=>prev.map(p => p.id === payload.id ? updated : p));
+            } else {
+              // Create new problem
+              const created = await api.createProblem(roomId, payload);
+              setProblems((prev)=>[created, ...prev]);
+            }
+            setOpen(false);
+            setEditMode(false);
+            setEditingProblem(null);
+          }catch(e){ alert(e.message); }
+        }} 
+      />
       <InviteMemberModal 
         open={inviteOpen} 
         onClose={()=>setInviteOpen(false)} 

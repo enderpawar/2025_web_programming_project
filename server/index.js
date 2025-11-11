@@ -584,34 +584,92 @@ app.post('/api/rooms/:id/generate-problems', authRequired, upload.single('file')
 
 Given the lecture content below, generate exactly 3 programming problems suitable for students.
 
-IMPORTANT: Return ONLY a JSON array, nothing else. No markdown, no code blocks, no explanations.
+CRITICAL REQUIREMENTS:
+1. Return ONLY a valid JSON array, nothing else. No markdown, no code blocks, no explanations.
+2. Each problem MUST have proper test cases with correct input/output format.
+3. The "input" field MUST be an array of arguments (even if there's only one argument, wrap it in an array).
+4. The "output" field MUST be the exact expected return value.
+5. Test cases MUST be executable - students will run their code against these exact inputs and outputs.
 
-Each problem object must have:
-- title: string (problem title)
-- description: string (detailed problem description in Korean)
-- difficulty: string ("Easy", "Medium", or "Hard")
-- functionName: string (the function name to implement)
-- starterCode: string (JavaScript starter code with function signature and TODO comment)
-- samples: array of test cases (optional, can be empty [])
-- tests: array of test cases with {input: array, output: any} format
+REQUIRED STRUCTURE for each problem:
+{
+  "title": "Problem title in Korean",
+  "description": "Detailed description in Korean explaining what the function should do",
+  "difficulty": "Easy" | "Medium" | "Hard",
+  "functionName": "exactFunctionName",
+  "starterCode": "function exactFunctionName(param1, param2) {\\n  // TODO: Implement this function\\n  // Expected return: description\\n}",
+  "samples": [
+    {"input": [arg1, arg2, ...], "output": expectedValue}
+  ],
+  "tests": [
+    {"input": [arg1, arg2, ...], "output": expectedValue},
+    {"input": [arg1_test2, arg2_test2, ...], "output": expectedValue2}
+  ]
+}
 
-Example format:
-[
-  {
-    "title": "두 수의 합",
-    "description": "배열에서 두 수를 더해 목표값이 되는 인덱스를 찾으세요.",
-    "difficulty": "Easy",
-    "functionName": "twoSum",
-    "starterCode": "function twoSum(nums, target) {\\n  // TODO\\n}",
-    "samples": [{"input": [[2,7,11,15], 9], "output": [0,1]}],
-    "tests": [{"input": [[2,7,11,15], 9], "output": [0,1]}]
-  }
-]
+EXAMPLES:
 
-Lecture content:
+Example 1 - Single parameter (array):
+{
+  "title": "배열 합계",
+  "description": "주어진 배열의 모든 요소의 합을 반환하세요.\\n\\n예시:\\n- Input: [1, 2, 3, 4]\\n- Output: 10",
+  "difficulty": "Easy",
+  "functionName": "arraySum",
+  "starterCode": "function arraySum(arr) {\\n  // TODO: Calculate and return sum of all elements\\n  // arr: array of numbers\\n  // return: number (sum)\\n}",
+  "samples": [
+    {"input": [[1, 2, 3, 4]], "output": 10},
+    {"input": [[5, 10, 15]], "output": 30}
+  ],
+  "tests": [
+    {"input": [[1, 2, 3, 4]], "output": 10},
+    {"input": [[5, 10, 15]], "output": 30},
+    {"input": [[]], "output": 0}
+  ]
+}
+
+Example 2 - Multiple parameters:
+{
+  "title": "두 수의 합",
+  "description": "정수 배열 nums와 목표값 target이 주어집니다.\\n배열에서 두 수를 더해서 target이 되는 인덱스를 배열로 반환하세요.\\n\\n예시:\\n- Input: nums = [2, 7, 11, 15], target = 9\\n- Output: [0, 1]\\n- 설명: nums[0] + nums[1] = 2 + 7 = 9",
+  "difficulty": "Easy",
+  "functionName": "twoSum",
+  "starterCode": "function twoSum(nums, target) {\\n  // TODO: Find two numbers that add up to target\\n  // nums: array of integers\\n  // target: integer\\n  // return: array of two indices [index1, index2]\\n}",
+  "samples": [
+    {"input": [[2, 7, 11, 15], 9], "output": [0, 1]},
+    {"input": [[3, 2, 4], 6], "output": [1, 2]}
+  ],
+  "tests": [
+    {"input": [[2, 7, 11, 15], 9], "output": [0, 1]},
+    {"input": [[3, 2, 4], 6], "output": [1, 2]},
+    {"input": [[3, 3], 6], "output": [0, 1]}
+  ]
+}
+
+Example 3 - String manipulation:
+{
+  "title": "문자열 뒤집기",
+  "description": "주어진 문자열을 뒤집어서 반환하세요.\\n\\n예시:\\n- Input: 'hello'\\n- Output: 'olleh'",
+  "difficulty": "Easy",
+  "functionName": "reverseString",
+  "starterCode": "function reverseString(str) {\\n  // TODO: Reverse the string\\n  // str: string\\n  // return: reversed string\\n}",
+  "samples": [
+    {"input": ["hello"], "output": "olleh"},
+    {"input": ["world"], "output": "dlrow"}
+  ],
+  "tests": [
+    {"input": ["hello"], "output": "olleh"},
+    {"input": ["world"], "output": "dlrow"},
+    {"input": ["a"], "output": "a"}
+  ]
+}
+
+LECTURE CONTENT:
 ${text}
 
-Return only the JSON array:`;
+Generate 3 problems based on the lecture content above. Ensure all test cases are correct and executable.
+
+Return ONLY the JSON array (no markdown, no code blocks):`;
+
 
     console.log('Calling Gemini API for problem generation...');
     const result = await model.generateContent(prompt);
@@ -700,6 +758,38 @@ app.delete('/api/rooms/:id/problems/:pid', authRequired, async (req, res) => {
     await Promise.all(targets.map((f) => fs.unlink(path.join(codesDir, f)).catch(() => {})));
   } catch {}
   res.json({ ok: true });
+});
+
+// Update a problem
+app.put('/api/rooms/:id/problems/:pid', authRequired, async (req, res) => {
+  const rooms = await readJSON('rooms.json');
+  const idx = rooms.findIndex((r) => r.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Room not found' });
+  const room = rooms[idx];
+  if (room.ownerId !== req.user.id) return res.status(403).json({ error: 'Only room owner can update problems' });
+  if (!Array.isArray(room.problems)) room.problems = [];
+  const pidx = room.problems.findIndex((p) => p.id === req.params.pid);
+  if (pidx === -1) return res.status(404).json({ error: 'Problem not found' });
+  
+  const { title, description, difficulty, functionName, starterCode, samples, tests, language } = req.body;
+  
+  // Update problem fields
+  const updatedProblem = {
+    ...room.problems[pidx],
+    title: title || room.problems[pidx].title,
+    description: description !== undefined ? description : room.problems[pidx].description,
+    difficulty: difficulty || room.problems[pidx].difficulty,
+    functionName: functionName || room.problems[pidx].functionName,
+    starterCode: starterCode !== undefined ? starterCode : room.problems[pidx].starterCode,
+    samples: samples || room.problems[pidx].samples,
+    tests: tests || room.problems[pidx].tests,
+    language: language || room.problems[pidx].language || 'javascript'
+  };
+  
+  room.problems[pidx] = updatedProblem;
+  rooms[idx] = room;
+  await writeJSON('rooms.json', rooms);
+  res.json(updatedProblem);
 });
 
 // Problem-scoped code

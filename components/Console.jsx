@@ -94,28 +94,29 @@ const Console = ({ output, onClear, problem, code, onCustomTest, addOutput }) =>
   };
 
   return (
-    <div className="flex flex-col h-full bg-gray-800 rounded-lg shadow-2xl overflow-hidden border border-gray-700/50">
-      <div className="flex-shrink-0 flex justify-between items-center p-3 bg-gray-900/70 border-b border-gray-700/50">
-        <h2 className="text-lg font-semibold text-gray-300">Console</h2>
-        <div className="flex gap-2">
+    <div style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+      <div className="console-tabs">
+        <div className="console-tab console-tab-active">Console</div>
+        <div className="editor-actions" style={{marginLeft: 'auto', display: 'flex', gap: '0.5rem'}}>
           {problem && (
             <button
               onClick={() => setShowCustomTest(!showCustomTest)}
-              className="flex items-center px-3 py-2 bg-emerald-600 text-white font-semibold rounded-md hover:bg-emerald-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-opacity-75 text-sm"
+              className="btn console-custom-test-btn"
+              style={{backgroundColor: '#10b981'}}
             >
               {showCustomTest ? '✕ Close Test' : '🧪 Custom Test'}
             </button>
           )}
           <button
             onClick={onClear}
-            className="flex items-center px-4 py-2 bg-gray-600 text-white font-semibold rounded-md hover:bg-gray-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75"
+            className="btn console-custom-test-btn"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 mr-2"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
+              style={{width: '1.25rem', height: '1.25rem', display: 'inline-block', marginRight: '0.5rem'}}
             >
               <path
                 strokeLinecap="round"
@@ -131,15 +132,16 @@ const Console = ({ output, onClear, problem, code, onCustomTest, addOutput }) =>
       
       {/* Custom Test Section */}
       {showCustomTest && problem && (
-        <div className="flex-shrink-0 p-3 bg-gray-900/50 border-b border-gray-700/50">
-          <div className="text-xs font-semibold text-emerald-400 mb-2">🧪 Custom Test Input</div>
-          <div className="text-xs text-gray-400 mb-2">
+        <div style={{padding: '0.75rem', backgroundColor: 'var(--color-bg-darker)', borderBottom: '1px solid var(--color-border)'}}>
+          <div className="test-case-label" style={{color: '#10b981', marginBottom: '0.5rem'}}>🧪 Custom Test Input</div>
+          <div className="test-case-label" style={{marginBottom: '0.5rem'}}>
             Enter input in JSON format (e.g., [[2,7,11,15],9])
           </div>
-          <div className="flex gap-2">
+          <div style={{display: 'flex', gap: '0.5rem'}}>
             <input
               type="text"
-              className="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="input"
+              style={{flex: 1, fontFamily: 'monospace', fontSize: '0.875rem'}}
               placeholder='[[2,7,11,15],9]'
               value={customInput}
               onChange={(e) => setCustomInput(e.target.value)}
@@ -152,27 +154,28 @@ const Console = ({ output, onClear, problem, code, onCustomTest, addOutput }) =>
             <button
               onClick={handleRunCustomTest}
               disabled={!customInput.trim()}
-              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:bg-emerald-800 disabled:cursor-not-allowed text-white font-semibold rounded text-sm transition-all"
+              className="btn btn-primary"
+              style={{backgroundColor: '#10b981', fontSize: '0.875rem'}}
             >
               Run
             </button>
           </div>
           
           {customTestResult && (
-            <div className={`mt-3 rounded p-3 text-sm ${customTestResult.success ? 'bg-green-900/30 border border-green-700/40' : 'bg-red-900/30 border border-red-700/40'}`}>
+            <div className={`test-result-card ${customTestResult.success ? 'test-result-pass' : 'test-result-fail'}`} style={{marginTop: '0.75rem'}}>
               {customTestResult.success ? (
                 <>
-                  <div className="text-xs font-semibold text-green-400 mb-2">✓ Test Passed</div>
-                  <div className="space-y-1">
+                  <div className="test-result-badge-pass">✓ Test Passed</div>
+                  <div>
                     <div>
-                      <span className="text-gray-400 text-xs">Input:</span>
-                      <pre className="font-mono text-xs text-white mt-1">
+                      <span className="test-case-label">Input:</span>
+                      <pre className="test-case-value">
                         {JSON.stringify(customTestResult.input)}
                       </pre>
                     </div>
                     <div>
-                      <span className="text-gray-400 text-xs">Output:</span>
-                      <pre className="font-mono text-xs text-green-400 mt-1">
+                      <span className="test-case-label">Output:</span>
+                      <pre className="test-case-value" style={{color: '#10b981'}}>
                         {JSON.stringify(customTestResult.output)}
                       </pre>
                     </div>
@@ -180,22 +183,22 @@ const Console = ({ output, onClear, problem, code, onCustomTest, addOutput }) =>
                 </>
               ) : (
                 <>
-                  <div className="text-xs font-semibold text-red-400 mb-2">✗ Error</div>
-                  <div className="text-xs text-red-300">{customTestResult.error}</div>
+                  <div className="test-result-badge-fail">✗ Error</div>
+                  <div className="test-result-badge-fail">{customTestResult.error}</div>
                 </>
               )}
             </div>
           )}
         </div>
       )}
-      <div className="flex-grow p-4 overflow-y-auto font-mono text-sm leading-6 space-y-2">
+      <div className="console-content">
         {output.length === 0 ? (
-          <p className="text-gray-500 italic">Console output will appear here...</p>
+          <p className="console-output" style={{color: 'var(--color-text-muted)', fontStyle: 'italic'}}>Console output will appear here...</p>
         ) : (
           output.map((line, index) => (
-            <div key={index} className={`flex items-start break-words ${getStyleForType(line.type)}`}>
-              <div className="flex-shrink-0 mt-0.5">{getIconForType(line.type)}</div>
-              <pre className="whitespace-pre-wrap flex-1">{line.message}</pre>
+            <div key={index} className={`console-output ${getStyleForType(line.type)}`} style={{display: 'flex', alignItems: 'flex-start'}}>
+              <div style={{flexShrink: 0, marginTop: '0.125rem'}}>{getIconForType(line.type)}</div>
+              <pre style={{whiteSpace: 'pre-wrap', flex: 1}}>{line.message}</pre>
             </div>
           ))
         )}

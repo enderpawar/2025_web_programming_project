@@ -18,6 +18,12 @@
   backdrop-filter: blur(8px);
 }
 
+/* Light mode header */
+[data-theme="light"] .landing-header {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 .landing-header-content {
   max-width: 72rem;
   margin: 0 auto;
@@ -123,6 +129,11 @@
   color: var(--color-text-muted);
 }
 
+/* Light mode subtitle */
+[data-theme="light"] .landing-subtitle {
+  color: var(--color-text-dim);
+}
+
 .landing-cta {
   margin-top: 2rem;
   display: flex;
@@ -181,6 +192,13 @@
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
 }
 
+/* Light mode prompt panel */
+[data-theme="light"] .landing-prompt-panel {
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+}
+
 .landing-prompt-buttons {
   display: flex;
   flex-wrap: wrap;
@@ -204,6 +222,16 @@
   background-color: rgba(255, 255, 255, 0.15);
 }
 
+/* Light mode prompt buttons */
+[data-theme="light"] .landing-prompt-btn {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--color-text-primary);
+}
+
+[data-theme="light"] .landing-prompt-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
 .landing-prompt-text {
   margin-top: 1.25rem;
   text-align: left;
@@ -218,6 +246,11 @@
 
 .landing-prompt-label {
   color: var(--color-text-muted);
+}
+
+/* Light mode prompt label */
+[data-theme="light"] .landing-prompt-label {
+  color: var(--color-text-dim);
 }
 
 .landing-prompt-value {
@@ -288,6 +321,17 @@
   background-color: rgba(255, 255, 255, 0.2);
 }
 
+/* Light mode menu button */
+[data-theme="light"] .landing-menu-btn {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--color-text-primary);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .landing-menu-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
 .landing-menu-signup {
   padding: 0.5rem 1.25rem;
   border-radius: 0.5rem;
@@ -328,6 +372,16 @@
   background-color: rgba(255, 255, 255, 0.2);
 }
 
+/* Light mode dropdown trigger */
+[data-theme="light"] .landing-dropdown-trigger {
+  background-color: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .landing-dropdown-trigger:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
 .landing-dropdown-menu {
   position: absolute;
   right: 0;
@@ -339,6 +393,13 @@
   padding: 1rem;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   z-index: 50;
+}
+
+/* Light mode dropdown menu */
+[data-theme="light"] .landing-dropdown-menu {
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 .landing-dropdown-name {
@@ -353,10 +414,20 @@
   margin-bottom: 0.5rem;
 }
 
+/* Light mode dropdown text */
+[data-theme="light"] .landing-dropdown-email {
+  color: var(--color-text-dim);
+}
+
 .landing-dropdown-divider {
   height: 1px;
   background-color: rgba(255, 255, 255, 0.1);
   margin: 0.5rem 0;
+}
+
+/* Light mode divider */
+[data-theme="light"] .landing-dropdown-divider {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .landing-dropdown-item {
@@ -375,6 +446,15 @@
 .landing-dropdown-item:hover {
   background-color: rgba(255, 255, 255, 0.1);
   color: var(--color-text-primary);
+}
+
+/* Light mode dropdown item */
+[data-theme="light"] .landing-dropdown-item {
+  color: var(--color-text-primary);
+}
+
+[data-theme="light"] .landing-dropdown-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 /* Typing Animation */

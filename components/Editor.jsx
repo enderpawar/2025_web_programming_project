@@ -2,13 +2,13 @@ import React from 'react';
 
 const Editor = ({ code, setCode, onRun, isRunning }) => {
   return (
-    <div className="flex flex-col h-full bg-gray-800 rounded-lg shadow-2xl overflow-hidden border border-gray-700/50">
-      <div className="flex-shrink-0 flex justify-between items-center p-3 bg-gray-900/70 border-b border-gray-700/50">
-        <h2 className="text-lg font-semibold text-gray-300">Code Editor</h2>
+    <div className="editor-container">
+      <div className="editor-header">
+        <h2 className="editor-title">Code Editor</h2>
         <button
           onClick={onRun}
           disabled={isRunning}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-500 disabled:bg-blue-800 disabled:cursor-not-allowed transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+          className="btn btn-primary"
         >
           {isRunning ? (
             <>
@@ -17,6 +17,7 @@ const Editor = ({ code, setCode, onRun, isRunning }) => {
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
+                style={{width: '1.25rem', height: '1.25rem', display: 'inline-block', marginRight: '0.5rem'}}
               >
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path
@@ -31,10 +32,10 @@ const Editor = ({ code, setCode, onRun, isRunning }) => {
             <>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
+                style={{width: '1.25rem', height: '1.25rem', display: 'inline-block', marginRight: '0.5rem'}}
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -44,12 +45,12 @@ const Editor = ({ code, setCode, onRun, isRunning }) => {
           )}
         </button>
       </div>
-      <div className="flex-grow p-1 relative">
+      <div style={{flex: 1, padding: '0.25rem', position: 'relative'}}>
         <textarea
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="Enter your JavaScript code here..."
-          className="w-full h-full p-3 bg-transparent text-gray-200 font-mono text-sm leading-6 resize-none focus:outline-none rounded-b-lg"
+          className="code-textarea"
           spellCheck="false"
         />
       </div>

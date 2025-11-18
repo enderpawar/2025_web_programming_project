@@ -36,6 +36,11 @@
   padding: 4rem 0;
 }
 
+/* Light mode empty state */
+[data-theme="light"] .rooms-empty-state {
+  color: var(--color-text-dim);
+}
+
 /* Room Avatar */
 .room-avatar-img {
   width: 3.5rem;
@@ -92,6 +97,11 @@
   text-overflow: ellipsis;
 }
 
+/* Light mode room card name */
+[data-theme="light"] .room-card-name {
+  color: var(--color-text-primary);
+}
+
 .room-card-author {
   font-size: 0.875rem;
   color: var(--color-text-muted);
@@ -100,12 +110,22 @@
   text-overflow: ellipsis;
 }
 
+/* Light mode room card author */
+[data-theme="light"] .room-card-author {
+  color: var(--color-text-dim);
+}
+
 .room-card-group {
   font-size: 0.75rem;
   color: var(--color-text-faint);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Light mode room card group */
+[data-theme="light"] .room-card-group {
+  color: var(--color-text-dim);
 }
 
 .room-card-arrow {
@@ -166,6 +186,17 @@
 
 .rooms-search-input::placeholder {
   color: var(--color-text-muted);
+}
+
+/* Light mode search input */
+[data-theme="light"] .rooms-search-input {
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  color: var(--color-text-primary);
+}
+
+[data-theme="light"] .rooms-search-input::placeholder {
+  color: var(--color-text-dim);
 }
 
 .rooms-filter-select {

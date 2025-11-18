@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { api } from '../api.js';
+import ThemeToggleButton from './ThemeToggleButton.jsx';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -27,6 +28,9 @@ const Login = () => {
   return (
     <div className="auth-page">
       <div className="auth-bg-gradient"></div>
+      <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', zIndex: 10 }}>
+        <ThemeToggleButton />
+      </div>
       <form onSubmit={submit} className="auth-container" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <h1 className="auth-title">Log In</h1>
         <input

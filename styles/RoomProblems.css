@@ -12,6 +12,12 @@
   backdrop-filter: blur(8px);
 }
 
+/* Light mode header */
+[data-theme="light"] .room-problems-header-bar {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 .room-problems-header-content {
   max-width: 72rem;
   margin: 0 auto;
@@ -53,6 +59,11 @@
   padding: 4rem 0;
 }
 
+/* Light mode empty state */
+[data-theme="light"] .problems-empty-state {
+  color: var(--color-text-dim);
+}
+
 /* Problem Card */
 .problem-card {
   width: 100%;
@@ -68,6 +79,17 @@
 
 .problem-card:hover {
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Light mode problem card */
+[data-theme="light"] .problem-card {
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .problem-card:hover {
+  background-color: #f9fafb;
+  border-color: rgba(0, 0, 0, 0.2);
 }
 
 .problem-card-button {
@@ -108,12 +130,22 @@
   text-overflow: ellipsis;
 }
 
+/* Light mode problem card title */
+[data-theme="light"] .problem-card-title {
+  color: var(--color-text-primary);
+}
+
 .problem-card-meta {
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.6);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Light mode problem card meta */
+[data-theme="light"] .problem-card-meta {
+  color: var(--color-text-dim);
 }
 
 .problem-card-delete-btn {
@@ -129,6 +161,25 @@
 
 .problem-card-delete-btn:hover {
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Light mode delete button */
+[data-theme="light"] .problem-card-delete-btn {
+  color: var(--color-text-primary);
+}
+
+[data-theme="light"] .problem-card-delete-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Problem card dropdown menu */
+.problem-card-dropdown-menu {
+  background: linear-gradient(to bottom, #1f2937, #111827);
+}
+
+[data-theme="light"] .problem-card-dropdown-menu {
+  background: linear-gradient(to bottom, #f3f4f6, #e5e7eb);
+  border-color: rgba(0, 0, 0, 0.15) !important;
 }
 
 /* Create Problem Form */

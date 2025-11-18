@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api.js';
+import ThemeToggleButton from './ThemeToggleButton.jsx';
 
 const ProblemCard = ({ problem, onClick, canDelete, onDelete, onEdit }) => {
   const [showMenu, setShowMenu] = useState(false);
@@ -40,11 +41,11 @@ const ProblemCard = ({ problem, onClick, canDelete, onDelete, onEdit }) => {
       {/* Slide-down menu */}
       {canDelete && problem.id !== 'legacy' && (
         <div 
+          className="problem-card-dropdown-menu"
           style={{
             maxHeight: showMenu ? '60px' : '0',
             overflow: 'hidden',
             transition: 'max-height 0.3s ease',
-            background: 'linear-gradient(to bottom, #1f2937, #111827)',
             borderRadius: showMenu ? '0 0 12px 12px' : '0',
             marginTop: showMenu ? '0' : '0',
             border: showMenu ? '1px solid #374151' : 'none',
@@ -543,6 +544,7 @@ const RoomProblems = () => {
         <div className="room-problems-header-content">
           <button onClick={()=>navigate('/rooms')} className="logo">JSC</button>
           <div className="room-problems-actions">
+            <ThemeToggleButton />
             <button onClick={()=>navigate('/rooms')} className="btn btn-ghost btn-sm">Back</button>
             {room && me && me.id === room.ownerId && me.role === 'professor' && (
               <>

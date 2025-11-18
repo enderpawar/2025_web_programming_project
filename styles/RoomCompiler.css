@@ -9,11 +9,22 @@
   overflow: hidden;
 }
 
+/* Light mode compiler page */
+[data-theme="light"] .room-compiler-page {
+  background-color: #f3f4f6 !important;
+}
+
 /* Top Bar */
 .compiler-header {
   padding: 0.75rem 1rem;
   background-color: var(--color-bg-darker);
   border-bottom: 1px solid var(--color-border);
+}
+
+/* Light mode compiler header */
+[data-theme="light"] .compiler-header {
+  background-color: white !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
 }
 
 .compiler-header-content {
@@ -38,9 +49,31 @@
   transition: all 0.2s;
 }
 
+/* Light mode back button */
+[data-theme="light"] .compiler-back-btn {
+  background-color: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
 .compiler-back-btn:hover {
   background-color: rgba(255, 255, 255, 0.1);
   color: var(--color-text-primary);
+}
+
+/* Light mode back button hover */
+[data-theme="light"] .compiler-back-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Light mode back button */
+[data-theme="light"] .compiler-back-btn {
+  background-color: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  color: var(--color-text-primary);
+}
+
+[data-theme="light"] .compiler-back-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .compiler-title {
@@ -55,12 +88,22 @@
   margin-left: 0.5rem;
 }
 
+/* Light mode subtitle */
+[data-theme="light"] .compiler-subtitle {
+  color: var(--color-text-dim);
+}
+
 .compiler-actions {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.6);
+}
+
+/* Light mode actions text */
+[data-theme="light"] .compiler-actions {
+  color: var(--color-text-dim);
 }
 
 .compiler-language-select {
@@ -117,6 +160,12 @@
   gap: 0.5rem;
 }
 
+/* Light mode hint button */
+[data-theme="light"] .compiler-hint-btn {
+  background-color: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+}
+
 .compiler-hint-btn:hover {
   background-color: rgba(168, 85, 247, 0.2);
 }
@@ -135,15 +184,29 @@
 
 /* Left Panel - Problem Description */
 .compiler-left-panel {
-  width: 360px;
+  width: 468px; /* 360px + 30% = 468px */
   background-color: var(--color-bg-darker);
   border-right: 1px solid var(--color-border);
   overflow-y: auto;
   padding: 1.5rem;
 }
 
+/* Light mode left panel */
+[data-theme="light"] .compiler-left-panel {
+  background-color: #f9fafb !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
 .problem-section {
   margin-bottom: 2rem;
+}
+
+/* Compiler action buttons container */
+.compiler-action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .problem-section-title {
@@ -185,6 +248,12 @@
   color: var(--color-secondary);
 }
 
+/* Light mode language badge */
+[data-theme="light"] .problem-language {
+  background-color: rgba(14, 165, 233, 0.1);
+  color: #0ea5e9;
+}
+
 .problem-description {
   color: var(--color-text-secondary);
   line-height: 1.6;
@@ -204,6 +273,12 @@
   overflow-x: auto;
 }
 
+/* Light mode code block */
+[data-theme="light"] .problem-code-block {
+  background-color: #f3f4f6;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
 .test-cases-list {
   display: flex;
   flex-direction: column;
@@ -215,6 +290,12 @@
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
   padding: 1rem;
+}
+
+/* Light mode test case card */
+[data-theme="light"] .test-case-card {
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 .test-case-label {
@@ -235,12 +316,24 @@
   margin-bottom: 0.5rem;
 }
 
+/* Light mode test case value */
+[data-theme="light"] .test-case-value {
+  background-color: #f3f4f6;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
 /* Center Panel - Editor */
 .compiler-center-panel {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background-color: var(--color-bg-dark);
+}
+
+/* Light mode center panel */
+[data-theme="light"] .compiler-center-panel {
+  background-color: white !important;
 }
 
 .editor-header {
@@ -250,6 +343,12 @@
   padding: 0.75rem 1rem;
   background-color: var(--color-bg-darker);
   border-bottom: 1px solid var(--color-border);
+}
+
+/* Light mode editor header */
+[data-theme="light"] .editor-header {
+  background-color: white !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
 }
 
 .editor-title {
@@ -279,14 +378,54 @@
   color: var(--color-text-primary);
 }
 
+/* Light mode editor action button */
+[data-theme="light"] .editor-action-btn {
+  background-color: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  color: var(--color-text-primary);
+}
+
+[data-theme="light"] .editor-action-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
 .editor-container {
   flex: 1;
   overflow: hidden;
+  background-color: var(--color-bg-dark);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Light mode editor container */
+[data-theme="light"] .editor-container {
+  background-color: white !important;
+}
+
+.code-textarea {
+  width: 100%;
+  height: 100%;
+  padding: 0.75rem;
+  background-color: var(--color-bg-darker);
+  color: var(--color-text-primary);
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  resize: none;
+  border: none;
+  outline: none;
+  border-radius: 0 0 0.5rem 0.5rem;
+}
+
+/* Light mode code textarea */
+[data-theme="light"] .code-textarea {
+  background-color: #f9fafb !important;
+  color: #111827 !important;
 }
 
 /* Right Panel - Console & Output */
 .compiler-right-panel {
-  width: 400px;
+  width: 520px; /* 400px + 30% = 520px */
   background-color: var(--color-bg-darker);
   border-left: 1px solid var(--color-border);
   display: flex;
@@ -294,10 +433,22 @@
   overflow: hidden;
 }
 
+/* Light mode right panel */
+[data-theme="light"] .compiler-right-panel {
+  background-color: #f9fafb !important;
+  border-left: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
 .console-tabs {
   display: flex;
   background-color: var(--color-bg-dark);
   border-bottom: 1px solid var(--color-border);
+}
+
+/* Light mode console tabs */
+[data-theme="light"] .console-tabs {
+  background-color: white !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
 }
 
 .console-tab {
@@ -318,6 +469,11 @@
   background-color: rgba(255, 255, 255, 0.05);
 }
 
+/* Light mode console tab hover */
+[data-theme="light"] .console-tab:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
 .console-tab-active {
   color: var(--color-primary);
   border-bottom-color: var(--color-primary);
@@ -327,6 +483,12 @@
   flex: 1;
   overflow-y: auto;
   padding: 1rem;
+  background-color: var(--color-bg-dark);
+}
+
+/* Light mode console content */
+[data-theme="light"] .console-content {
+  background-color: white !important;
 }
 
 .console-output {
@@ -336,6 +498,18 @@
   color: var(--color-text-primary);
   white-space: pre-wrap;
   word-break: break-all;
+}
+
+/* Light mode console output */
+[data-theme="light"] .console-output {
+  color: #111827;
+}
+
+/* Custom Test Button - 30% reduced height */
+.console-custom-test-btn {
+  padding: 0.35rem 0.75rem !important; /* Original: 0.5rem 1rem */
+  font-size: 0.8125rem !important;
+  height: auto !important;
 }
 
 .console-empty {
@@ -366,6 +540,12 @@
   border-left: 4px solid transparent;
   border-radius: 0.5rem;
   padding: 1rem;
+}
+
+/* Light mode test result card */
+[data-theme="light"] .test-result-card {
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 .test-result-card-pass {
@@ -422,13 +602,25 @@
   font-size: 0.8125rem;
 }
 
+/* Light mode test result value */
+[data-theme="light"] .test-result-value {
+  background-color: #f3f4f6;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
 /* Hint Panel */
 .hint-panel {
   background-color: var(--color-bg-dark);
   border: 1px solid rgba(168, 85, 247, 0.3);
   border-radius: 0.75rem;
-  padding: 1.5rem;
-  margin-top: 1rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Light mode hint panel */
+[data-theme="light"] .hint-panel {
+  background-color: rgba(168, 85, 247, 0.05);
+  border: 1px solid rgba(168, 85, 247, 0.2);
 }
 
 .hint-panel-header {
@@ -467,6 +659,12 @@
   overflow-x: auto;
 }
 
+/* Light mode hint code block */
+[data-theme="light"] .hint-code-block {
+  background-color: #f3f4f6;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
 .hint-loading {
   display: flex;
   align-items: center;
@@ -481,6 +679,45 @@
   border-top-color: #a855f7;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
+}
+
+/* Test Result Styles */
+.test-result-pass {
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.test-result-fail {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.test-result-badge {
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.test-result-badge-pass {
+  color: #10b981;
+  font-weight: 700;
+}
+
+.test-result-badge-fail {
+  color: #ef4444;
+  font-size: 0.75rem;
+}
+
+/* Light mode test result styles */
+[data-theme="light"] .test-result-pass {
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+[data-theme="light"] .test-result-fail {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 /* Responsive */

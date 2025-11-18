@@ -2,9 +2,11 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Editor from './Editor.jsx';
 import Console from './Console.jsx';
+import ThemeToggleButton from './ThemeToggleButton.jsx';
 import { OutputType } from '../types.js';
 import { api } from '../api.js';
 import { io } from 'socket.io-client';
+import '../styles/RoomCompiler.css';
 
 const defaultCode = `// Room scoped JS file.\n// Write code here and click Run. Use Save to persist per room.\n\nfunction greet(name) {\n  return \`Hello, \${name}!\`;\n}\n\nconst message = greet('Room');\nconsole.log(message);`;
 
@@ -19,6 +21,7 @@ const TopBar = ({ title, subtitle, onBack, onSave, saving, savedAt }) => (
         </div>
       </div>
       <div className="compiler-actions">
+        <ThemeToggleButton />
         {savedAt && <span>Saved {new Date(savedAt).toLocaleTimeString()}</span>}
         <button
           onClick={onSave}
@@ -246,7 +249,7 @@ const RoomCompiler = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gray-900 font-sans">
+    <div className="room-compiler-page">
       <TopBar
         title={room.name}
         subtitle={`${room.groupName} • ${room.authorName}`}
@@ -255,34 +258,34 @@ const RoomCompiler = () => {
         saving={saving}
         savedAt={savedAt}
       />
-      <div className="flex-grow grid grid-rows-[auto,1fr] md:grid-rows-1 md:grid-cols-3 overflow-hidden p-2 md:p-4 gap-4">
-        <div className="bg-gray-800 rounded-lg border border-gray-700/50 p-4 overflow-y-auto text-gray-200">
+      <div className="compiler-main">
+        <div className="compiler-left-panel">
           {problem && (
             <>
-              <div className="text-lg font-semibold text-white/90 mb-1">{problem.title || 'Problem'}</div>
+              <div className="problem-name">{problem.title || 'Problem'}</div>
               {problem.difficulty && (
-                <div className="text-xs inline-block px-2 py-0.5 rounded bg-white/10 mb-2">{problem.difficulty}</div>
+                <div className="problem-difficulty">{problem.difficulty}</div>
               )}
               
               {/* Function Name */}
               {problem.functionName && (
-                <div className="mt-3 mb-3">
-                  <div className="text-xs font-semibold text-white/60 mb-1">Function Name</div>
-                  <div className="bg-black/30 rounded px-3 py-2 font-mono text-sm text-blue-300">
+                <div className="problem-section">
+                  <div className="problem-section-title">Function Name</div>
+                  <div className="problem-code-block">
                     {problem.functionName}
                   </div>
                 </div>
               )}
 
-              <div className="prose prose-invert max-w-none text-sm whitespace-pre-wrap leading-6">
+              <div className="problem-description">
                 {problem.description || 'No description provided.'}
               </div>
               
               {/* Starter Code Preview */}
               {problem.starterCode && (
-                <div className="mt-4">
-                  <div className="font-semibold mb-2 text-white/80">Starter Code</div>
-                  <pre className="bg-black/30 rounded p-3 text-xs font-mono text-gray-300 overflow-x-auto">
+                <div className="problem-section">
+                  <div className="problem-section-title">Starter Code</div>
+                  <pre className="problem-code-block">
                     {problem.starterCode}
                   </pre>
                 </div>
@@ -290,22 +293,22 @@ const RoomCompiler = () => {
 
               {/* Sample Test Cases */}
               {Array.isArray(problem.samples) && problem.samples.length > 0 && (
-                <div className="mt-4">
-                  <div className="font-semibold mb-2 text-white/80">Sample Test Cases</div>
-                  <div className="space-y-3">
+                <div className="problem-section">
+                  <div className="problem-section-title">Sample Test Cases</div>
+                  <div className="test-cases-list">
                     {problem.samples.map((s, idx) => (
-                      <div key={idx} className="bg-black/20 rounded p-3 border border-white/10">
-                        <div className="text-xs font-semibold text-blue-400 mb-2">Sample {idx + 1}</div>
-                        <div className="space-y-1">
+                      <div key={idx} className="test-case-card">
+                        <div className="problem-section-title">Sample {idx + 1}</div>
+                        <div>
                           <div>
-                            <span className="text-white/50 text-xs">Input:</span>
-                            <pre className="font-mono text-sm text-white/90 mt-1 bg-black/20 rounded px-2 py-1">
+                            <span className="test-case-label">Input:</span>
+                            <pre className="test-case-value">
                               {JSON.stringify(s.input)}
                             </pre>
                           </div>
                           <div>
-                            <span className="text-white/50 text-xs">Output:</span>
-                            <pre className="font-mono text-sm text-green-400 mt-1 bg-black/20 rounded px-2 py-1">
+                            <span className="test-case-label">Output:</span>
+                            <pre className="test-case-value">
                               {JSON.stringify(s.output)}
                             </pre>
                           </div>
@@ -318,13 +321,13 @@ const RoomCompiler = () => {
 
               {/* Model Solution (Professor Only) */}
               {me?.role === 'professor' && problem.solution && (
-                <div className="mt-4">
-                  <div className="font-semibold mb-2 text-amber-400">🔒 Model Solution (Professor Only)</div>
-                  <div className="bg-amber-900/20 rounded p-3 border border-amber-500/30">
-                    <div className="text-xs text-amber-200 mb-2">
+                <div className="problem-section">
+                  <div className="problem-section-title" style={{color: '#fbbf24'}}>🔒 Model Solution (Professor Only)</div>
+                  <div className="hint-panel">
+                    <div className="hint-panel-content">
                       AI-generated reference solution for validation purposes
                     </div>
-                    <pre className="bg-black/40 rounded p-3 text-xs font-mono text-amber-100 overflow-x-auto">
+                    <pre className="hint-code-block">
                       {problem.solution}
                     </pre>
                   </div>
@@ -333,10 +336,10 @@ const RoomCompiler = () => {
 
               {/* Hidden Test Cases Info */}
               {Array.isArray(problem.tests) && problem.tests.length > 0 && (
-                <div className="mt-4">
-                  <div className="font-semibold mb-2 text-white/80">Test Cases</div>
-                  <div className="bg-black/20 rounded p-3 border border-white/10">
-                    <div className="text-xs text-white/60">
+                <div className="problem-section">
+                  <div className="problem-section-title">Test Cases</div>
+                  <div className="test-case-card">
+                    <div className="test-case-label">
                       {problem.tests.length} hidden test case{problem.tests.length !== 1 ? 's' : ''} will be used to evaluate your solution.
                     </div>
                   </div>
@@ -345,19 +348,19 @@ const RoomCompiler = () => {
             </>
           )}
 
-          <div className="mt-4 flex gap-2">
-            <button onClick={handleRunCode} disabled={isRunning} className="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 text-white text-sm">{isRunning ? 'Running…' : 'Run'}</button>
+          <div className="problem-section compiler-action-buttons">
+            <button onClick={handleRunCode} disabled={isRunning} className="btn btn-primary compiler-run-btn">{isRunning ? 'Running…' : 'Run'}</button>
             {problem && (
               <>
-                <button onClick={runTests} className="px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-sm">Run Tests</button>
+                <button onClick={runTests} className="btn btn-primary compiler-run-btn">Run Tests</button>
                 <button 
                   onClick={getAiHint} 
                   disabled={loadingHint}
-                  className="px-3 py-1.5 rounded bg-purple-600 hover:bg-purple-500 disabled:bg-purple-800 text-white text-sm flex items-center gap-1"
+                  className="compiler-hint-btn"
                 >
                   {loadingHint ? (
                     <>
-                      <span className="animate-spin">⚡</span>
+                      <span>⚡</span>
                       <span>Loading...</span>
                     </>
                   ) : (
@@ -371,23 +374,22 @@ const RoomCompiler = () => {
             )}
           </div>
           {showHint && (
-            <div className="mt-4 bg-purple-900/30 border border-purple-700/40 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="font-semibold text-purple-300 flex items-center gap-2">
-                  <span>💡</span>
-                  <span>AI Hint</span>
-                </div>
+            <div className="hint-panel">
+              <div className="hint-panel-header">
+                <span className="hint-panel-icon">💡</span>
+                <span className="hint-panel-title">AI Hint</span>
                 <button 
                   onClick={() => setShowHint(false)}
-                  className="text-white/60 hover:text-white/90 text-sm"
+                  className="editor-action-btn"
+                  style={{marginLeft: 'auto'}}
                 >
                   ✕
                 </button>
               </div>
-              <div className="text-sm text-white/90 whitespace-pre-wrap leading-relaxed">
+              <div className="hint-panel-content">
                 {loadingHint ? (
-                  <div className="flex items-center gap-2 text-purple-300">
-                    <span className="animate-pulse">Thinking...</span>
+                  <div className="hint-loading">
+                    <span>Thinking...</span>
                   </div>
                 ) : (
                   aiHint || 'Click "Get AI Hint" to receive guidance.'
@@ -396,22 +398,22 @@ const RoomCompiler = () => {
             </div>
           )}
           {problem && testResults && (
-            <div className="mt-4 text-sm">
-              {testResults.error && <div className="text-red-400">Error: {testResults.error}</div>}
+            <div className="problem-section">
+              {testResults.error && <div className="test-result-badge-fail">Error: {testResults.error}</div>}
               {!!testResults.results?.length && (
-                <div className="space-y-2">
+                <div className="test-cases-list">
                   {testResults.results.map((r, i) => (
-                    <div key={i} className={`rounded p-2 ${r.pass ? 'bg-green-900/30 border border-green-700/40' : 'bg-red-900/30 border border-red-700/40'}`}>
-                      <div className="font-mono text-xs mb-1">Test Case {i + 1}: {r.pass ? '✓ Passed' : '✗ Failed'}</div>
-                      {r.error && <div className="text-red-300 text-xs">{r.error}</div>}
+                    <div key={i} className={`test-result-card ${r.pass ? 'test-result-pass' : 'test-result-fail'}`}>
+                      <div className="test-result-badge">Test Case {i + 1}: {r.pass ? '✓ Passed' : '✗ Failed'}</div>
+                      {r.error && <div className="test-result-badge-fail">{r.error}</div>}
                       {!r.pass && (
-                        <div className="text-xs text-white/60 mt-1">
+                        <div className="test-case-label">
                           Check your logic and try again. Use custom test to debug.
                         </div>
                       )}
                     </div>
                   ))}
-                  <div className={`font-semibold ${testResults.passed ? 'text-green-400' : 'text-red-400'}`}>
+                  <div className={`test-result-badge ${testResults.passed ? 'test-result-badge-pass' : 'test-result-badge-fail'}`}>
                     {testResults.passed ? 'All tests passed 🎉' : `${testResults.results.filter(r => r.pass).length} / ${testResults.results.length} tests passed`}
                   </div>
                 </div>
@@ -419,10 +421,10 @@ const RoomCompiler = () => {
             </div>
           )}
         </div>
-        <div className="md:col-span-1 md:col-start-2 flex flex-col min-h-0">
+        <div className="compiler-center-panel">
           <Editor code={code} setCode={setCode} onRun={handleRunCode} isRunning={isRunning} />
         </div>
-        <div className="md:col-span-1 flex flex-col min-h-0">
+        <div className="compiler-right-panel">
           <Console 
             output={output} 
             onClear={handleClearConsole} 

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api, setToken } from '../api.js';
 import AuthModal from './AuthModal.jsx';
+import ThemeToggleButton from './ThemeToggleButton.jsx';
 
 const PillInput = ({ placeholder, value, onChange }) => (
   <input
@@ -154,11 +155,14 @@ const Rooms = () => {
           >
             JSC
           </button>
-          {me && me.role === 'professor' && (
-            <button className="btn btn-primary btn-sm" onClick={() => setOpen(true)}>
-              CREATE
-            </button>
-          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <ThemeToggleButton />
+            {me && me.role === 'professor' && (
+              <button className="btn btn-primary btn-sm" onClick={() => setOpen(true)}>
+                CREATE
+              </button>
+            )}
+          </div>
         </div>
       </header>
 

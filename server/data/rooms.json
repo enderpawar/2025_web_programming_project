@@ -710,6 +710,49 @@
             ]
           }
         ]
+      },
+      {
+        "id": "9fddb5b7-1c77-4f0d-9494-caed672a0dca",
+        "title": "Two Sum",
+        "description": "정수 배열과 타겟이 주어졌을 때, 타겟에 합산되는 두 수의 인덱스를 반환하는 함수를 작성하세요.",
+        "difficulty": "Easy",
+        "functionName": "solve",
+        "language": "javascript",
+        "starterCode": "function solve(nums, target) {\n  // TODO\n}",
+        "samples": [
+          {
+            "input": [
+              [
+                2,
+                7,
+                11,
+                15
+              ],
+              9
+            ],
+            "output": [
+              0,
+              1
+            ]
+          }
+        ],
+        "tests": [
+          {
+            "input": [
+              [
+                2,
+                7,
+                11,
+                15
+              ],
+              9
+            ],
+            "output": [
+              0,
+              1
+            ]
+          }
+        ]
       }
     ]
   }

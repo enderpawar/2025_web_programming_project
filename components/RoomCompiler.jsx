@@ -54,6 +54,12 @@ const RoomCompiler = () => {
   const [loadingHint, setLoadingHint] = useState(false);
   const [showHint, setShowHint] = useState(false);
 
+  // Resizable panels state
+  const [leftPanelWidth, setLeftPanelWidth] = useState(468);
+  const [rightPanelWidth, setRightPanelWidth] = useState(400);
+  const [isResizingLeft, setIsResizingLeft] = useState(false);
+  const [isResizingRight, setIsResizingRight] = useState(false);
+
   useEffect(() => {
     (async () => {
       try {
@@ -152,6 +158,39 @@ const RoomCompiler = () => {
       setIsRunning(false);
     }
   }, [code]);
+
+  // Panel resize handlers
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (isResizingLeft) {
+        const newWidth = Math.max(300, Math.min(800, e.clientX));
+        setLeftPanelWidth(newWidth);
+      }
+      if (isResizingRight) {
+        const newWidth = Math.max(300, Math.min(800, window.innerWidth - e.clientX));
+        setRightPanelWidth(newWidth);
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizingLeft(false);
+      setIsResizingRight(false);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+
+    if (isResizingLeft || isResizingRight) {
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizingLeft, isResizingRight]);
 
   const handleClearConsole = useCallback(() => setOutput([]), []);
 
@@ -259,7 +298,7 @@ const RoomCompiler = () => {
         savedAt={savedAt}
       />
       <div className="compiler-main">
-        <div className="compiler-left-panel">
+        <div className="compiler-left-panel" style={{ width: `${leftPanelWidth}px` }}>
           {problem && (
             <>
               <div className="problem-name">{problem.title || 'Problem'}</div>
@@ -296,25 +335,43 @@ const RoomCompiler = () => {
                 <div className="problem-section">
                   <div className="problem-section-title">Sample Test Cases</div>
                   <div className="test-cases-list">
-                    {problem.samples.map((s, idx) => (
-                      <div key={idx} className="test-case-card">
-                        <div className="problem-section-title">Sample {idx + 1}</div>
-                        <div>
-                          <div>
-                            <span className="test-case-label">Input:</span>
-                            <pre className="test-case-value">
-                              {JSON.stringify(s.input)}
-                            </pre>
-                          </div>
-                          <div>
-                            <span className="test-case-label">Output:</span>
-                            <pre className="test-case-value">
-                              {JSON.stringify(s.output)}
-                            </pre>
+                    {problem.samples.map((s, idx) => {
+                      // Format input arguments as readable strings
+                      const formatInputArgs = (input) => {
+                        if (!Array.isArray(input)) return String(input);
+                        return input.map(arg => {
+                          if (typeof arg === 'string') return `"${arg}"`;
+                          if (typeof arg === 'object') return JSON.stringify(arg);
+                          return String(arg);
+                        }).join(', ');
+                      };
+
+                      const formatOutput = (output) => {
+                        if (typeof output === 'string') return `"${output}"`;
+                        if (typeof output === 'object') return JSON.stringify(output);
+                        return String(output);
+                      };
+
+                      return (
+                        <div key={idx} className="test-case-card">
+                          <div className="test-case-header">Sample {idx + 1}</div>
+                          <div className="test-case-content">
+                            <div className="test-case-row">
+                              <span className="test-case-label">Input:</span>
+                              <div className="test-case-value">
+                                {formatInputArgs(s.input)}
+                              </div>
+                            </div>
+                            <div className="test-case-row">
+                              <span className="test-case-label">Expected Output:</span>
+                              <div className="test-case-value">
+                                {formatOutput(s.output)}
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -421,10 +478,18 @@ const RoomCompiler = () => {
             </div>
           )}
         </div>
+        <div 
+          className="panel-resizer panel-resizer-left"
+          onMouseDown={() => setIsResizingLeft(true)}
+        />
         <div className="compiler-center-panel">
           <Editor code={code} setCode={setCode} onRun={handleRunCode} isRunning={isRunning} />
         </div>
-        <div className="compiler-right-panel">
+        <div 
+          className="panel-resizer panel-resizer-right"
+          onMouseDown={() => setIsResizingRight(true)}
+        />
+        <div className="compiler-right-panel" style={{ width: `${rightPanelWidth}px` }}>
           <Console 
             output={output} 
             onClear={handleClearConsole} 
